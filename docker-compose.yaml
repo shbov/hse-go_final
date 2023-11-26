@@ -1,15 +1,43 @@
 version: '3.8'
 
 services:
+  location-build:
+    image: build:latest
+    build:
+      context: "."
+      dockerfile: ".docker/location/build.Dockerfile"
+
+  location:
+    build:
+      context: "."
+      dockerfile: ".docker/location/app.Dockerfile"
+    restart: unless-stopped
+    depends_on:
+      location-build:
+        condition: service_completed_successfully
+      postgresql:
+        condition: service_healthy
+    volumes:
+      - './.config/location/config.docker.yaml:/app/config.yaml'
+      - './migrations/location/:/app/migrations/location'
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+
   mongodb:
     image: mongo:latest
     container_name: mongodb
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB}
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: driver
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   postgresql:
     image: postgres:latest
@@ -17,6 +45,11 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: location
+    healthcheck:
+      test: "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"
+      interval: 10s
+      timeout: 5s
+      retries: 5
