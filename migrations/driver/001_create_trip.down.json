@@ -1,0 +1,9 @@
+[
+  {
+    "dropIndexes": "trip",
+    "index": "id_unique"
+  },
+  {
+    "dropCollections": "trip"
+  }
+]
