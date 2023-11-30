@@ -3,7 +3,7 @@ app:
   shutdown_timeout: 22s
 database:
   dsn: postgres://postgres:password@localhost:5432/location?sslmode=disable
-  migrations_dir: "./migrations/location"
+  migrations_dir: "./migration/location"
 http:
   serve_address: localhost:8080
   base_path: /location/v1

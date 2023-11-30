@@ -13,7 +13,7 @@ const (
 	DefaultShutdownTimeout = 20 * time.Second
 	DefaultBasePath        = "/auth/v1"
 	DefaultDSN             = "dsn://"
-	DefaultMigrationsDir   = "file://migrations/auth"
+	DefaultMigrationsDir   = "file://migration/auth"
 )
 
 type AppConfig struct {

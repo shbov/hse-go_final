@@ -19,7 +19,7 @@ services:
         condition: service_healthy
     volumes:
       - './.config/location/config.docker.yaml:/app/config.yaml'
-      - './migrations/location/:/app/migrations/location'
+      - './migration/location/:/app/migration/location'
     ports:
       - "8080:8080"
       - "9000:9000"
