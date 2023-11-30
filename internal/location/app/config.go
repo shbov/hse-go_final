@@ -12,6 +12,7 @@ const (
 	DefaultServeAddress    = "localhost:8080"
 	DefaultShutdownTimeout = 20 * time.Second
 	DefaultBasePath        = "/location/v1"
+	DefaultDSN             = "dsn://"
 	DefaultMigrationsDir   = "file://migrations/location"
 )
 
