@@ -75,7 +75,7 @@ func initDB(ctx context.Context, config *DatabaseConfig) (*pgxpool.Pool, error) 
 		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
 
-	// migration
+	// migrations
 	m, err := migrate.New(config.MigrationsDir, config.DSN)
 	if err != nil {
 		return nil, err

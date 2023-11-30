@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/opentracing/opentracing-go"
-	"github.com/shbov/hse-go_final/internal/driver/adapter/db"
 	"github.com/shbov/hse-go_final/pkg/driver/migration"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -38,7 +37,7 @@ func (a *app) Serve(ctx context.Context) error {
 	defer cancel()
 
 	a.log.Info("Connecting to mongo...")
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(a.cfg.Mongo.Uri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(a.config.Mongo.Uri))
 	if err != nil {
 		return fmt.Errorf("new mongo client create error: %w", err)
 	}
@@ -59,7 +58,7 @@ func (a *app) Serve(ctx context.Context) error {
 		}
 	}
 
-	tripRepo, err := db.CreateTripRepo(a.log, database)
+	//tripRepo, err := db.CreateTripRepo(a.log, database)
 	if err != nil {
 		return fmt.Errorf("url repo create failed: %w", err)
 	}
@@ -77,7 +76,7 @@ func (a *app) Serve(ctx context.Context) error {
 }
 
 func (a *app) Shutdown() {
-	_, cancel := context.WithTimeout(context.Background(), a.config.App.ShutdownTimeout)
+	_, cancel := context.WithTimeout(context.Background(), a.config.Server.ShutdownTimeout)
 	defer cancel()
 
 	//a.httpAdapter.Shutdown(ctx)

@@ -18,7 +18,7 @@ type AppConfig struct {
 }
 
 type MongoConfig struct {
-	Database string `yaml:"database"          env:"DEMO_MONGO_DATABASE" default:"demo"`
+	Database string `yaml:"database"          env:"DEMO_MONGO_DATABASE" default:"driver"`
 	Uri      string `yaml:"uri"               env:"DEMO_MONGO_URI"`
 }
 
@@ -31,7 +31,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	HttpServerPort int `yaml:"http_server_port" env:"DRIVER_HTTP_SERVER_PORT" default:"8080"`
+	HttpServerPort  int           `yaml:"http_server_port" env:"DRIVER_HTTP_SERVER_PORT" default:"8080"`
+	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
 }
 
 type MigrationsConfig struct {
