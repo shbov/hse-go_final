@@ -9,8 +9,6 @@ import (
 	"log"
 )
 
-var DSN = ""
-
 func getConfigPath() string {
 	var configPath string
 
@@ -21,15 +19,15 @@ func getConfigPath() string {
 }
 
 func main() {
-	lg, err := logger.GetLogger(true, DSN, "development")
+	path := getConfigPath()
+	config, err := app.NewConfig(path)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	path := getConfigPath()
-	config, err := app.NewConfig(path)
+	lg, err := logger.GetLogger(true, config.App.DSN, "development")
 	if err != nil {
-		lg.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	ctx := zapctx.WithLogger(context.Background(), lg)
