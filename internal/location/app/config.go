@@ -11,13 +11,14 @@ const (
 	AppName                = "location"
 	DefaultServeAddress    = "localhost:8080"
 	DefaultShutdownTimeout = 20 * time.Second
-	DefaultBasePath        = "/auth/v1"
+	DefaultBasePath        = "/location/v1"
 	DefaultDSN             = "dsn://"
-	DefaultMigrationsDir   = "file://migrations/auth"
+	DefaultMigrationsDir   = "file://migrations/location"
 )
 
 type AppConfig struct {
 	Debug           bool          `yaml:"debug"`
+	DSN             string        `yaml:"dsn"`
 	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
 }
 
@@ -40,6 +41,7 @@ func NewConfig(fileName string) (*Config, error) {
 	cnf := Config{
 		App: AppConfig{
 			ShutdownTimeout: DefaultShutdownTimeout,
+			DSN:             DefaultDSN,
 		},
 		Database: DatabaseConfig{
 			DSN:           DefaultDSN,

@@ -10,6 +10,8 @@ COPY go.sum .
 RUN go mod download
 
 COPY internal/location ./internal/location
+COPY migrations/location ./migrations/location
+
 COPY cmd/location ./cmd/location
 
 WORKDIR /app/cmd/location
