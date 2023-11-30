@@ -28,11 +28,11 @@ type Config struct {
 	Server      ServerConfig     `yaml:"server"         env:"-"`
 	Mongo       MongoConfig      `yaml:"mongo" env:"-"`
 	Migrations  MigrationsConfig `yaml:"migration" env:"-"`
+	App         AppConfig        `yaml:"app"`
 }
 
 type ServerConfig struct {
-	HttpServerPort  int           `yaml:"http_server_port" env:"DRIVER_HTTP_SERVER_PORT" default:"8080"`
-	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
+	HttpServerPort int `yaml:"http_server_port" env:"DRIVER_HTTP_SERVER_PORT" default:"8080"`
 }
 
 type MigrationsConfig struct {

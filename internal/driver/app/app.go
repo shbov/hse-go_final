@@ -76,7 +76,7 @@ func (a *app) Serve(ctx context.Context) error {
 }
 
 func (a *app) Shutdown() {
-	_, cancel := context.WithTimeout(context.Background(), a.config.Server.ShutdownTimeout)
+	_, cancel := context.WithTimeout(context.Background(), a.config.App.ShutdownTimeout)
 	defer cancel()
 
 	//a.httpAdapter.Shutdown(ctx)
