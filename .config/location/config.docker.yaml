@@ -1,6 +1,7 @@
 app:
   debug: true
   shutdown_timeout: 22s
+  dsn: https://10445b5245bc310875ef8167eba3904a@o4506218171793408.ingest.sentry.io/4506308115693568
 database:
   dsn: postgres://postgres:password@postgresql:5432/location?sslmode=disable
   migrations_dir: "file://migration/location"
