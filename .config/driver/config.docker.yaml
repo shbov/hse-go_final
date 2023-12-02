@@ -1,0 +1,11 @@
+environment: development
+service_name: driver-server
+server:
+  http_server_port: 8080
+mongo:
+  database: driver
+  uri: "mongodb://localhost:27017,localhost:27018,localhost:27019/driver?replicaSet=rs0&authSource=admin&readPreference=primaryPreferred"
+migrations:
+  uri: "mongodb://localhost:27017,localhost:27018,localhost:27019/driver?replicaSet=rs0&authSource=admin&readPreference=primaryPreferred"
+  path: "./migrations/driver"
+  enabled: true
