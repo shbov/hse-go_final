@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,20 +23,20 @@ type app struct {
 
 	tracer opentracing.Tracer
 
-	//httpAdapter httpadapter.Adapter
+	httpAdapter httpadapter.Adapter
 }
 
 func (a *app) Serve(ctx context.Context) error {
-	//lg := zapctx.Logger(ctx)
+	lg := zapctx.Logger(ctx)
 	done := make(chan os.Signal, 1)
 
 	signal.Notify(done, syscall.SIGTERM, syscall.SIGINT)
 
-	//go func() {
-	//	if err := a.httpAdapter.Serve(ctx); err != nil && err != http.ErrServerClosed {
-	//		lg.Fatal(err.Error())
-	//	}
-	//}()
+	go func() {
+		if err := a.httpAdapter.Serve(ctx); err != nil && err != http.ErrServerClosed {
+			lg.Fatal(err.Error())
+		}
+	}()
 
 	<-done
 
@@ -47,7 +49,7 @@ func (a *app) Shutdown() {
 	_, cancel := context.WithTimeout(context.Background(), a.config.App.ShutdownTimeout)
 	defer cancel()
 
-	//a.httpAdapter.Shutdown(ctx)
+	a.httpAdapter.Shutdown(ctx)
 }
 
 func New(ctx context.Context, config *Config) (App, error) {
@@ -56,9 +58,10 @@ func New(ctx context.Context, config *Config) (App, error) {
 		return nil, err
 	}
 
+	httpAdapter: = nil
 	a := &app{
 		config: config,
-		//httpAdapter: nil,
+		httpAdapter: httpAdapter,
 	}
 
 	return a, nil
