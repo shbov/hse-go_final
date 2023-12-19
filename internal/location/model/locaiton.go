@@ -1,8 +1,13 @@
 package model
 
-type LatLngLiteral struct {
-	Login          string `json:"login"`
-	HashedPassword []byte `json:"-"`
+import "time"
 
-	Email string `json:"email"`
+type Location struct {
+	Id       int    `json:"id"`
+	DriverId string `json:"driver_id"`
+
+	Lat float64 `json:"lat"` // float - ok?
+	Lng float64 `json:"lng"`
+
+	CreatedAt time.Time `json:"created_at"` // time.Time - ok? mb timestamp (other libs)?
 }
