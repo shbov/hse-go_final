@@ -95,7 +95,7 @@ func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
 func (a *adapter) Serve(ctx context.Context) error {
 	lg := zapctx.Logger(ctx)
 
-	shut := initTracerProvider()
+	shut := initTracerProvider(a.config.OtlpAddress)
 	defer shut()
 
 	r := chi.NewRouter()
@@ -161,7 +161,7 @@ func New(
 	}
 }
 
-func initTracerProvider() func() {
+func initTracerProvider(otlpAddress string) func() {
 	ctx := context.Background()
 	res, err := resource.New(ctx,
 		resource.WithFromEnv(),
@@ -178,7 +178,7 @@ func initTracerProvider() func() {
 
 	traceClient := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint("docker.for.mac.host.internal:4317"),
+		otlptracegrpc.WithEndpoint(otlpAddress),
 		otlptracegrpc.WithDialOption(grpc.WithBlock()))
 	sctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
