@@ -97,6 +97,32 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, "")
 }
 
+func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	encoder := json.NewEncoder(w)
+	defer r.Body.Close()
+
+	var request requests.GetDriversByLocationReqBody
+	err := decoder.Decode(&request)
+	if err != nil {
+		writeError(w, service.ErrIncorrect)
+		return
+	}
+
+	if !request.Validate() {
+		writeError(w, service.ErrIncorrect)
+		return
+	}
+
+	result, err := a.service.GetDriversInLocation(r.Context(), request.Lat, request.Lng, request.Radius)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeJSONResponse(w, http.StatusOK, "")
+}
+
 func (a *adapter) Serve(ctx context.Context) error {
 	lg := zapctx.Logger(ctx)
 
