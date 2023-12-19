@@ -153,10 +153,6 @@ func (a *adapter) Serve(ctx context.Context) error {
 
 	a.server = &http.Server{Addr: a.config.ServeAddress, Handler: r}
 
-	if a.config.UseTLS {
-		return a.server.ListenAndServeTLS(a.config.TLSCrtFile, a.config.TLSKeyFile)
-	}
-
 	http.Handle("/metrics", promhttp.Handler())
 	go func() {
 		err := http.ListenAndServe(":9000", nil)

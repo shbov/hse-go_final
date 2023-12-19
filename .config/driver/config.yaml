@@ -4,7 +4,7 @@ app:
   debug: true
   shutdown_timeout: 22s
 server:
-  http_server_port: 8080
+  http_server_port: 8081
 mongo:
   database: driver
   uri: "mongodb://localhost:27017,localhost:27018,localhost:27019/driver?replicaSet=rs0&authSource=admin&readPreference=primaryPreferred"
