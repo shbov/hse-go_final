@@ -93,34 +93,33 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeResponse(w, http.StatusOK, "")
+	writeResponse(w, http.StatusOK, "Success operation")
 }
 
-//func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
-//	decoder := json.NewDecoder(r.Body)
-//	encoder := json.NewEncoder(w)
-//	defer r.Body.Close()
-//
-//	var request requests.GetDriversByLocationReqBody
-//	err := decoder.Decode(&request)
-//	if err != nil {
-//		writeError(w, service.ErrIncorrect)
-//		return
-//	}
-//
-//	if !request.Validate() {
-//		writeError(w, service.ErrIncorrect)
-//		return
-//	}
-//
-//	result, err := a.service.GetDriversInLocation(r.Context(), request.Lat, request.Lng, request.Radius)
-//	if err != nil {
-//		writeError(w, err)
-//		return
-//	}
-//
-//	writeJSONResponse(w, http.StatusOK, "")
-//}
+func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	var request requests.GetDriversByLocationReqBody
+	err := decoder.Decode(&request)
+	if err != nil {
+		writeError(w, service.ErrRequestIsIncorrect)
+		return
+	}
+
+	if !request.Validate() {
+		writeError(w, service.ErrRequestIsIncorrect)
+		return
+	}
+
+	result, err := a.service.GetDriversInLocation(r.Context(), request.Lat, request.Lng, request.Radius)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeJSONResponse(w, http.StatusOK, result)
+}
 
 func (a *adapter) Serve(ctx context.Context) error {
 	lg := zapctx.Logger(ctx)
@@ -143,6 +142,7 @@ func (a *adapter) Serve(ctx context.Context) error {
 	}))
 
 	apiRouter.Post("/{driver_id}/location", a.SetDriverLocation)
+	apiRouter.Get("/", a.GetDriversByLocation)
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json
