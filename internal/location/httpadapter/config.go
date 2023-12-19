@@ -11,4 +11,6 @@ type Config struct {
 	RefreshTokenCookie string `yaml:"refresh_token_cookie"`
 
 	SwaggerAddress string `yaml:"swagger_address"`
+
+	OtlpAddress string `yaml:"otlp"`
 }

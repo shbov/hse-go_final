@@ -18,6 +18,8 @@ const (
 
 	DefaultAccessTokenCookie  = "access_token"
 	DefaultRefreshTokenCookie = "refresh_token"
+
+	DefaultOtlpAddress = "localhost:4317"
 )
 
 type AppConfig struct {
@@ -53,6 +55,7 @@ func NewConfig(fileName string) (*Config, error) {
 			BasePath:           DefaultBasePath,
 			AccessTokenCookie:  DefaultAccessTokenCookie,
 			RefreshTokenCookie: DefaultRefreshTokenCookie,
+			OtlpAddress:        DefaultOtlpAddress,
 		},
 		Database: DatabaseConfig{
 			DSN:           DefaultDSN,
