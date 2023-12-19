@@ -33,7 +33,7 @@ func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat flo
 	return nil
 }
 
-func (r *locationRepo) GetLocation(ctx context.Context, centerLat float64, centerLng float64, radius float64) (*model.Location, error) {
+func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float64, centerLng float64, radius float64) (*model.Location, error) {
 	var location model.Location
 
 	row := r.conn(ctx).QueryRow(
