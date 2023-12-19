@@ -4,6 +4,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/repo"
 	"github.com/shbov/hse-go_final/internal/location/service"
 	"golang.org/x/net/context"
+	"log"
 )
 
 var _ service.Location = (*locationService)(nil)
@@ -18,7 +19,10 @@ func (ls *locationService) SetLocationByDriverId(ctx context.Context, driverId s
 }
 
 func New(repo repo.Location) service.Location {
-	return &locationService{
+	s := &locationService{
 		repo: repo,
 	}
+
+	log.Println("service successfully created")
+	return s
 }

@@ -21,7 +21,6 @@ func getConfigPath() string {
 func main() {
 	path := getConfigPath()
 	config, err := app.NewConfig(path)
-	log.Println("Started service")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -33,7 +32,7 @@ func main() {
 	}
 
 	ctx := zapctx.WithLogger(context.Background(), lg)
-	a, err := app.New(ctx, config)
+	a, err := app.New(config)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

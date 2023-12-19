@@ -3,6 +3,7 @@ package service
 import "errors"
 
 var (
-	ErrIncorrect = errors.New("not found")
-	ErrTest      = errors.New("test")
+	ErrDriverNotFound     = errors.New("driver is not found")
+	ErrRequestIsIncorrect = errors.New("request is incorrect")
+	ErrTest               = errors.New("test error")
 )

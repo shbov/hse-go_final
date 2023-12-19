@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/shbov/hse-go_final/internal/location/model"
 	"github.com/shbov/hse-go_final/internal/location/repo"
+	"log"
 )
 
 var _ repo.Location = (*locationRepo)(nil)
@@ -67,5 +68,6 @@ func New(pgxPool *pgxpool.Pool) (repo.Location, error) {
 		pgxPool: pgxPool,
 	}
 
+	log.Println("repo successfully created")
 	return r, nil
 }

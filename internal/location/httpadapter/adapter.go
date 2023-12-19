@@ -53,48 +53,24 @@ type adapter struct {
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:9000
+// @host localhost:8080
 // @BasePath /api/v1
 // @query.collection.format multi
-
-// @securityDefinitions.basic BasicAuth
-
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-
-// @securitydefinitions.oauth2.application OAuth2Application
-// @tokenUrl https://example.com/oauth/token
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.implicit OAuth2Implicit
-// @authorizationurl https://example.com/oauthorize
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.password OAuth2Password
-// @tokenUrl /v1/login
-// @scope.read Grants read access
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.accessCode OAuth2AccessCode
-// @tokenUrl https://example.com/oauth/token
-// @authorizationurl https://example.com/oauthorize
-// @scope.admin Grants read and write access to administrative information
-
-// @x-extension-openapi {"example": "value on a json format"}
 
 // SetDriverLocation godoc
 // @Summary SetDriverLocation
 // @Description Обновление данных о позиции водителя
 // @Accept       json
-// @Param        driver_id    path     uuid  true  "ID of driver"  Format(uuid)
+// @Param        driver_id    path     string  true  "ID of driver"  Format(uuid)
+// @Param        lat    body     number  false  "Latitude  in decimal degrees"
+// @Param        lng    body     number  false  "Longitude in decimal degrees"
 // @Success 200
 // @Failure 400
-// @Router /drivers/{driver_id}/location [post]
+// @Router /{driver_id}/location [post]
 func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "SetDriverLocation")
+	defer span.End()
+
 	driverId := chi.URLParam(r, "driver_id")
 
 	decoder := json.NewDecoder(r.Body)
@@ -103,12 +79,12 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	var request requests.SetDriverLocationBody
 	err := decoder.Decode(&request)
 	if err != nil {
-		writeError(w, service.ErrIncorrect)
+		writeError(w, service.ErrRequestIsIncorrect)
 		return
 	}
 
 	if !request.Validate() {
-		writeError(w, service.ErrIncorrect)
+		writeError(w, service.ErrRequestIsIncorrect)
 		return
 	}
 
@@ -145,7 +121,7 @@ func (a *adapter) Serve(ctx context.Context) error {
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json
-	apiRouter.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", a.config.BasePath))))
+	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", a.config.BasePath))))
 
 	r.Mount(a.config.BasePath, apiRouter)
 
@@ -178,6 +154,7 @@ func New(
 
 	docs.SwaggerInfo.BasePath = config.BasePath
 
+	log.Println("adapter successfully created")
 	return &adapter{
 		config:  config,
 		service: service,
@@ -199,6 +176,7 @@ func initTracerProvider(otlpAddress string) func() {
 		log.Fatal(err)
 	}
 
+	log.Println("otlp address is " + otlpAddress)
 	traceClient := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(otlpAddress),

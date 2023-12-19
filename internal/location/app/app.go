@@ -11,6 +11,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/repo/locationrepo"
 	"github.com/shbov/hse-go_final/internal/location/service"
 	"github.com/shbov/hse-go_final/internal/location/service/locationsvc"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -37,6 +38,7 @@ func (a *app) Serve(ctx context.Context) error {
 	signal.Notify(done, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
+		log.Println("server successfully started at " + a.config.HTTP.ServeAddress)
 		if err := a.httpAdapter.Serve(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			lg.Fatal(err.Error())
 		}
@@ -45,7 +47,7 @@ func (a *app) Serve(ctx context.Context) error {
 	<-done
 
 	a.Shutdown()
-
+	log.Println("server successfully stopped")
 	return nil
 }
 
@@ -56,7 +58,7 @@ func (a *app) Shutdown() {
 	a.httpAdapter.Shutdown(ctx)
 }
 
-func New(ctx context.Context, config *Config) (App, error) {
+func New(config *Config) (App, error) {
 	pgxPool, err := initDB(context.Background(), &config.Database)
 	if err != nil {
 		return nil, err

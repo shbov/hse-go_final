@@ -32,7 +32,7 @@ func writeJSONResponse(w http.ResponseWriter, status int, payload interface{}) {
 
 func writeError(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, service.ErrIncorrect):
+	case errors.Is(err, service.ErrRequestIsIncorrect):
 		writeJSONResponse(w, http.StatusBadRequest, Error{Message: err.Error()})
 	default:
 		writeJSONResponse(w, http.StatusInternalServerError, Error{Message: err.Error()})

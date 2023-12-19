@@ -13,49 +13,34 @@ info:
   title: Location service
   version: "1.0"
 paths:
-  /drivers/{driver_id}/location:
+  /{driver_id}/location:
     post:
-      description: method for saving driver's location
+      consumes:
+      - application/json
+      description: Обновление данных о позиции водителя
+      parameters:
+      - description: ID of driver
+        format: uuid
+        in: path
+        name: driver_id
+        required: true
+        type: string
+      - description: Latitude  in decimal degrees
+        in: body
+        name: lat
+        required: true
+        schema:
+          type: number
+      - description: Longitude in decimal degrees
+        in: body
+        name: lng
+        required: true
+        schema:
+          type: number
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
       summary: SetDriverLocation
-securityDefinitions:
-  ApiKeyAuth:
-    in: header
-    name: Authorization
-    type: apiKey
-  BasicAuth:
-    type: basic
-  OAuth2AccessCode:
-    authorizationUrl: https://example.com/oauthorize
-    flow: accessCode
-    scopes:
-      admin: ' Grants read and write access to administrative information'
-    tokenUrl: https://example.com/oauth/token
-    type: oauth2
-  OAuth2Application:
-    flow: application
-    scopes:
-      admin: ' Grants read and write access to administrative information'
-      write: ' Grants write access'
-    tokenUrl: https://example.com/oauth/token
-    type: oauth2
-  OAuth2Implicit:
-    authorizationUrl: https://example.com/oauthorize
-    flow: implicit
-    scopes:
-      admin: ' Grants read and write access to administrative information'
-      write: ' Grants write access'
-    type: oauth2
-  OAuth2Password:
-    flow: password
-    scopes:
-      admin: ' Grants read and write access to administrative information'
-      read: ' Grants read access'
-      write: ' Grants write access'
-    tokenUrl: /v1/login
-    type: oauth2
 swagger: "2.0"
-x-extension-openapi:
-  example: value on a json format
