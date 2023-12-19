@@ -138,7 +138,6 @@ func (a *adapter) Serve(ctx context.Context) error {
 		WithUserAgent: true,
 	}))
 
-	apiRouter.Post("/example", a.Example)
 	apiRouter.Post("/{driver_id}/location", a.SetDriverLocation)
 
 	// установка маршрута для документации
