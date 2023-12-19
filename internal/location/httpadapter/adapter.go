@@ -86,10 +86,13 @@ type adapter struct {
 
 // @x-extension-openapi {"example": "value on a json format"}
 
-// Example Auth godoc
+// SetDriverLocation godoc
 // @Summary SetDriverLocation
-// @Description method for saving driver's location
+// @Description Обновление данных о позиции водителя
+// @Accept       json
+// @Param        driver_id    path     uuid  true  "ID of driver"  Format(uuid)
 // @Success 200
+// @Failure 400
 // @Router /drivers/{driver_id}/location [post]
 func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	driverId := chi.URLParam(r, "driver_id")
