@@ -1,5 +1,13 @@
 basePath: /api/v1
-host: localhost:9000
+definitions:
+  requests.SetDriverLocationBody:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+host: localhost:8080
 info:
   contact:
     email: support@swagger.io
@@ -25,18 +33,12 @@ paths:
         name: driver_id
         required: true
         type: string
-      - description: Latitude  in decimal degrees
+      - description: Latitude and longitude  in decimal degrees
         in: body
         name: lat
         required: true
         schema:
-          type: number
-      - description: Longitude in decimal degrees
-        in: body
-        name: lng
-        required: true
-        schema:
-          type: number
+          $ref: '#/definitions/requests.SetDriverLocationBody'
       responses:
         "200":
           description: OK

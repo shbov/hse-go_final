@@ -41,21 +41,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Latitude  in decimal degrees",
+                        "description": "Latitude and longitude  in decimal degrees",
                         "name": "lat",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "description": "Longitude in decimal degrees",
-                        "name": "lng",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "number"
+                            "$ref": "#/definitions/requests.SetDriverLocationBody"
                         }
                     }
                 ],
@@ -66,6 +57,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "requests.SetDriverLocationBody": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
                 }
             }
         }
