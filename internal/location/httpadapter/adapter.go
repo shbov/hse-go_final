@@ -146,7 +146,7 @@ func (a *adapter) Serve(ctx context.Context) error {
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json
-	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", a.config.BasePath))))
+	apiRouter.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", a.config.BasePath))))
 
 	r.Mount(a.config.BasePath, apiRouter)
 
