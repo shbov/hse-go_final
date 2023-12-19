@@ -9,6 +9,8 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/shbov/hse-go_final/internal/location/httpadapter"
 	"github.com/shbov/hse-go_final/internal/location/repo/locationrepo"
+	"github.com/shbov/hse-go_final/internal/location/service"
+	"github.com/shbov/hse-go_final/internal/location/service/locationsvc"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,9 +25,9 @@ import (
 type app struct {
 	config *Config
 
-	tracer opentracing.Tracer
-
-	httpAdapter httpadapter.Adapter
+	tracer          opentracing.Tracer
+	locationService service.Location
+	httpAdapter     httpadapter.Adapter
 }
 
 func (a *app) Serve(ctx context.Context) error {
@@ -60,12 +62,12 @@ func New(ctx context.Context, config *Config) (App, error) {
 		return nil, err
 	}
 
-	locationRepo, err := locationrepo.New(ctx, pgxPool)
+	locationRepo, err := locationrepo.New(pgxPool)
 	if err != nil {
 		return nil, err
 	}
 
-	locationService := locationService.New(locationRepo)
+	locationService := locationsvc.New(locationRepo)
 
 	a := &app{
 		config:          config,
