@@ -61,7 +61,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 
 	a := &app{
 		config:      config,
-		httpAdapter: httpadapter.New(&config.HTTP, nil),
+		httpAdapter: httpadapter.New(&config.HTTP, httpadapter.OurService{}),
 	}
 
 	return a, nil

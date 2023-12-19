@@ -33,6 +33,6 @@ func main() {
 	ctx := zapctx.WithLogger(context.Background(), lg)
 	_, err = app.New(ctx, config)
 	if err != nil {
-		lg.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 }

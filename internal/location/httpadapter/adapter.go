@@ -3,7 +3,7 @@ package httpadapter
 import (
 	"context"
 	"fmt"
-	"github.com/swaggo/swag/example/basic/docs"
+	"github.com/shbov/hse-go_final/internal/location/docs"
 	"github.com/toshi0607/chi-prometheus"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -34,10 +34,60 @@ var (
 
 type adapter struct {
 	config  *Config
-	service ourService // todo: replace
+	service OurService
 	server  *http.Server
 }
 
+// @title Location service
+// @version 1.0
+// @description This is a location service
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:9000
+// @BasePath /api/v1
+// @query.collection.format multi
+
+// @securityDefinitions.basic BasicAuth
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
+// @securitydefinitions.oauth2.application OAuth2Application
+// @tokenUrl https://example.com/oauth/token
+// @scope.write Grants write access
+// @scope.admin Grants read and write access to administrative information
+
+// @securitydefinitions.oauth2.implicit OAuth2Implicit
+// @authorizationurl https://example.com/oauthorize
+// @scope.write Grants write access
+// @scope.admin Grants read and write access to administrative information
+
+// @securitydefinitions.oauth2.password OAuth2Password
+// @tokenUrl /v1/login
+// @scope.read Grants read access
+// @scope.write Grants write access
+// @scope.admin Grants read and write access to administrative information
+
+// @securitydefinitions.oauth2.accessCode OAuth2AccessCode
+// @tokenUrl https://example.com/oauth/token
+// @authorizationurl https://example.com/oauthorize
+// @scope.admin Grants read and write access to administrative information
+
+// @x-extension-openapi {"example": "value on a json format"}
+
+// Example Auth godoc
+// @Summary example
+// @Description example method
+// @Success 200
+// @Router /example [get]
 func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
 	panic("Unimplemented func")
 }
@@ -91,9 +141,11 @@ func (a *adapter) Shutdown(ctx context.Context) {
 	_ = a.server.Shutdown(ctx)
 }
 
+type OurService struct{}
+
 func New(
 	config *Config,
-	authorizer ourService) Adapter {
+	service OurService) Adapter {
 
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress
@@ -105,7 +157,7 @@ func New(
 
 	return &adapter{
 		config:  config,
-		service: authorizer,
+		service: service,
 	}
 }
 

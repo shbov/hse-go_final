@@ -2,11 +2,8 @@ package httpadapter
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-
-	"github.com/anonimpopov/hw4/internal/service"
 )
 
 // writeResponse - вспомогательная функция, которая записывет http статус-код и текстовое сообщение в ответ клиенту.
@@ -31,13 +28,13 @@ func writeJSONResponse(w http.ResponseWriter, status int, payload interface{}) {
 	writeResponse(w, status, string(response))
 }
 
-func writeError(w http.ResponseWriter, err error) {
-	switch {
-	case errors.Is(err, service.ErrForbidden):
-		writeJSONResponse(w, http.StatusForbidden, Error{Message: err.Error()})
-	case errors.Is(err, service.ErrNotFound):
-		writeJSONResponse(w, http.StatusNotFound, Error{Message: err.Error()})
-	default:
-		writeJSONResponse(w, http.StatusInternalServerError, Error{Message: err.Error()})
-	}
-}
+//func writeError(w http.ResponseWriter, err error) {
+//	switch {
+//	case errors.Is(err, service.ErrForbidden):
+//		writeJSONResponse(w, http.StatusForbidden, Error{Message: err.Error()})
+//	case errors.Is(err, service.ErrNotFound):
+//		writeJSONResponse(w, http.StatusNotFound, Error{Message: err.Error()})
+//	default:
+//		writeJSONResponse(w, http.StatusInternalServerError, Error{Message: err.Error()})
+//	}
+//}
