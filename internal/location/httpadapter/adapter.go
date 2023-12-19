@@ -2,8 +2,10 @@ package httpadapter
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/location/docs"
+	"github.com/shbov/hse-go_final/internal/location/model/requests"
 	"github.com/shbov/hse-go_final/internal/location/service"
 	"github.com/toshi0607/chi-prometheus"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -95,7 +97,29 @@ func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
 
 func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	driverId := chi.URLParam(r, "driver_id")
-	a.service.
+
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	var request requests.SetDriverLocationBody
+	err := decoder.Decode(&request)
+	if err != nil {
+		writeError(w, service.ErrIncorrect)
+		return
+	}
+
+	if !request.Validate() {
+		writeError(w, service.ErrIncorrect)
+		return
+	}
+
+	err = a.service.SetLocationByDriverId(r.Context(), driverId, request.Lat, request.Lng)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, "")
 }
 
 func (a *adapter) Serve(ctx context.Context) error {

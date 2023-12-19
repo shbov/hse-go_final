@@ -3,6 +3,8 @@ package httpadapter
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-errors/errors"
+	"github.com/shbov/hse-go_final/internal/location/service"
 	"net/http"
 )
 
@@ -28,13 +30,11 @@ func writeJSONResponse(w http.ResponseWriter, status int, payload interface{}) {
 	writeResponse(w, status, string(response))
 }
 
-//func writeError(w http.ResponseWriter, err error) {
-//	switch {
-//	case errors.Is(err, service.ErrForbidden):
-//		writeJSONResponse(w, http.StatusForbidden, Error{Message: err.Error()})
-//	case errors.Is(err, service.ErrNotFound):
-//		writeJSONResponse(w, http.StatusNotFound, Error{Message: err.Error()})
-//	default:
-//		writeJSONResponse(w, http.StatusInternalServerError, Error{Message: err.Error()})
-//	}
-//}
+func writeError(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, service.ErrIncorrect):
+		writeJSONResponse(w, http.StatusBadRequest, Error{Message: err.Error()})
+	default:
+		writeJSONResponse(w, http.StatusInternalServerError, Error{Message: err.Error()})
+	}
+}
