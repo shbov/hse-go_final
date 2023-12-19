@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/location/docs"
 	"github.com/shbov/hse-go_final/internal/location/repo/locationrepo"
+	"github.com/shbov/hse-go_final/internal/location/service"
 	"github.com/toshi0607/chi-prometheus"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -35,7 +36,7 @@ var (
 
 type adapter struct {
 	config  *Config
-	service OurService
+	service service.Location
 	server  *http.Server
 }
 
@@ -148,11 +149,9 @@ func (a *adapter) Shutdown(ctx context.Context) {
 	_ = a.server.Shutdown(ctx)
 }
 
-type OurService struct{}
-
 func New(
 	config *Config,
-	service OurService) Adapter {
+	service service.Location) Adapter {
 
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress

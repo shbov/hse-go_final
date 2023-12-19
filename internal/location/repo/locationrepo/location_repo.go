@@ -10,6 +10,8 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/repo"
 )
 
+var _ repo.Location = (*repo.Location)(nil)
+
 type locationRepo struct {
 	pgxPool *pgxpool.Pool
 }

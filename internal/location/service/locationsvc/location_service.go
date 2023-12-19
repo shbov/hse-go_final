@@ -5,6 +5,8 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/service"
 )
 
+var _ service.Location = (*service.Location)(nil)
+
 type locationService struct {
 	repo repo.Location
 }

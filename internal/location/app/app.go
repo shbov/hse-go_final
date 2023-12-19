@@ -72,7 +72,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 	a := &app{
 		config:          config,
 		locationService: locationService,
-		httpAdapter:     httpadapter.New(&config.HTTP, httpadapter.OurService{}),
+		httpAdapter:     httpadapter.New(&config.HTTP, locationService),
 	}
 
 	return a, nil
@@ -95,6 +95,7 @@ func initDB(ctx context.Context, config *DatabaseConfig) (*pgxpool.Pool, error) 
 		return nil, err
 	}
 
+	// if we need to down all the tables & data
 	//if err := m.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 	//	return nil, err
 	//}
