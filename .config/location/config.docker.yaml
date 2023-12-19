@@ -9,4 +9,4 @@ http:
   serve_address: :8080
   swagger_address: localhost:8080 # like an external domain or something
   base_path: /api/v1/drivers
-  otlp: "docker.for.mac.host.internal:4317"
+  otlp: "jaeger-all-in-one:4317"
