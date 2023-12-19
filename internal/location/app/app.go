@@ -55,25 +55,22 @@ func (a *app) Shutdown() {
 }
 
 func New(ctx context.Context, config *Config) (App, error) {
-	pgx, err := initDB(context.Background(), &config.Database)
+	pgxPool, err := initDB(context.Background(), &config.Database)
 	if err != nil {
 		return nil, err
 	}
 
-	lr, err := locationrepo.New(pgx)
+	locationRepo, err := locationrepo.New(ctx, pgxPool)
 	if err != nil {
 		return nil, err
 	}
-	location, err := lr.GetLocation(ctx, 70.5, 55.5, 1)
-	if err != nil {
-		return nil, err
-	}
-	println(location.Id, location.DriverId)
+
+	locationService := locationService.New(locationRepo)
 
 	a := &app{
-		config: config,
-
-		httpAdapter: httpadapter.New(&config.HTTP, httpadapter.OurService{}),
+		config:          config,
+		locationService: locationService,
+		httpAdapter:     httpadapter.New(&config.HTTP, httpadapter.OurService{}),
 	}
 
 	return a, nil
