@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/location/docs"
-	"github.com/shbov/hse-go_final/internal/location/repo/locationrepo"
 	"github.com/shbov/hse-go_final/internal/location/service"
 	"github.com/toshi0607/chi-prometheus"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"

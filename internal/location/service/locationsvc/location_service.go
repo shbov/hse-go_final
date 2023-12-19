@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-var _ service.Location = (*service.Location)(nil)
+var _ service.Location = (*locationService)(nil)
 
 type locationService struct {
 	repo repo.Location

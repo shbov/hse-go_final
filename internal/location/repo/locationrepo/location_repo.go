@@ -10,7 +10,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/repo"
 )
 
-var _ repo.Location = (*repo.Location)(nil)
+var _ repo.Location = (*locationRepo)(nil)
 
 type locationRepo struct {
 	pgxPool *pgxpool.Pool
@@ -22,12 +22,6 @@ func (r *locationRepo) conn(ctx context.Context) Conn {
 	}
 
 	return r.pgxPool
-}
-
-func (r *locationRepo) WithNewTx(ctx context.Context, f func(ctx context.Context) error) error {
-	return r.pgxPool.BeginFunc(ctx, func(tx pgx.Tx) error {
-		return f(context.WithValue(ctx, repo.CtxKeyTx, tx))
-	})
 }
 
 func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat float64, lng float64) error {
@@ -47,7 +41,7 @@ func (r *locationRepo) GetLocation(ctx context.Context, centerLat float64, cente
 		`SELECT id, driver_id, lat, lng, created_at FROM locations WHERE (lat - $1) * (lat - $1) + (lng - $2) * (lng - $2) <= $3`,
 		centerLat, centerLng, radius*radius)
 	if err := row.Scan(&location.Id, &location.DriverId, &location.Lat, &location.Lng, &location.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("Didn't find drivers in that location\n")
 		}
 		return nil, err
