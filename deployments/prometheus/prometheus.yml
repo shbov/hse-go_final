@@ -28,7 +28,7 @@ scrape_configs:
     static_configs:
       - targets:
           - grafana:3000
-  - job_name: ourApp
+  - job_name: location-service
     honor_timestamps: true
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -36,4 +36,4 @@ scrape_configs:
     scheme: http
     static_configs:
       - targets:
-          - docker.for.mac.host.internal:9000
+          - location:9000
