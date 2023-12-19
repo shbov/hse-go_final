@@ -54,21 +54,16 @@ func (r *locationRepo) GetLocation(ctx context.Context, centerLat float64, cente
 	return &location, nil
 }
 
-func (r *locationRepo) GetLocationByDriverId(ctx context.Context, driverId string) (*model.Location, error) {
-	var location model.Location
-
-	row := r.conn(ctx).QueryRow(
+func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId string, lat float64, lng float64) error {
+	_, err := r.conn(ctx).Exec(
 		ctx,
-		`SELECT id, driver_id, lat, lng, created_at FROM locations WHERE driver_id == $1`,
-		driverId)
-	if err := row.Scan(&location.Id, &location.DriverId, &location.Lat, &location.Lng, &location.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.New("No drivers with that UUID\n")
-		}
-		return nil, err
+		`UPDATE locations SET lat = $1, lng = $2 WHERE driver_id = $3`,
+		lat, lng, driverId)
+	if err != nil {
+		return err
 	}
 
-	return &location, nil
+	return nil
 }
 
 func New(pgxPool *pgxpool.Pool) (repo.Location, error) {

@@ -95,7 +95,7 @@ func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
 
 func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	driverId := chi.URLParam(r, "driver_id")
-	locationrepo.New()
+	a.service.
 }
 
 func (a *adapter) Serve(ctx context.Context) error {
