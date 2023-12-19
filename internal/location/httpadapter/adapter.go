@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/location/docs"
+	"github.com/shbov/hse-go_final/internal/location/repo/locationrepo"
 	"github.com/toshi0607/chi-prometheus"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -92,6 +93,11 @@ func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
 	panic("Unimplemented func")
 }
 
+func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
+	driverId := chi.URLParam(r, "driver_id")
+	locationrepo.New()
+}
+
 func (a *adapter) Serve(ctx context.Context) error {
 	lg := zapctx.Logger(ctx)
 
@@ -113,6 +119,7 @@ func (a *adapter) Serve(ctx context.Context) error {
 	}))
 
 	apiRouter.Post("/example", a.Example)
+	apiRouter.Post("/{driver_id}/location", a.SetDriverLocation)
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json
@@ -178,7 +185,7 @@ func initTracerProvider() func() {
 
 	traceClient := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint("docker.for.mac.host.internal:4317"),
+		otlptracegrpc.WithEndpoint("localhost:4317"),
 		otlptracegrpc.WithDialOption(grpc.WithBlock()))
 	sctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()

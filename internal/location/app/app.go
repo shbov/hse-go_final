@@ -8,6 +8,7 @@ import (
 	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
 	"github.com/shbov/hse-go_final/internal/location/httpadapter"
+	"github.com/shbov/hse-go_final/internal/location/repo/locationrepo"
 	"net/http"
 	"os"
 	"os/signal"
@@ -54,13 +55,24 @@ func (a *app) Shutdown() {
 }
 
 func New(ctx context.Context, config *Config) (App, error) {
-	_, err := initDB(context.Background(), &config.Database)
+	pgx, err := initDB(context.Background(), &config.Database)
 	if err != nil {
 		return nil, err
 	}
 
+	lr, err := locationrepo.New(pgx)
+	if err != nil {
+		return nil, err
+	}
+	location, err := lr.GetLocation(ctx, 70.5, 55.5, 1)
+	if err != nil {
+		return nil, err
+	}
+	println(location.Id, location.DriverId)
+
 	a := &app{
-		config:      config,
+		config: config,
+
 		httpAdapter: httpadapter.New(&config.HTTP, httpadapter.OurService{}),
 	}
 
@@ -84,11 +96,11 @@ func initDB(ctx context.Context, config *DatabaseConfig) (*pgxpool.Pool, error) 
 		return nil, err
 	}
 
-	if err := m.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return nil, err
-	}
+	//if err := m.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	//	return nil, err
+	//}
 
-	if err := m.Up(); err != nil {
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return nil, err
 	}
 

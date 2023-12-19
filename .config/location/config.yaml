@@ -4,7 +4,7 @@ app:
   dsn: https://10445b5245bc310875ef8167eba3904a@o4506218171793408.ingest.sentry.io/4506308115693568
 database:
   dsn: postgres://postgres:password@localhost:5432/location?sslmode=disable
-  migrations_dir: "./migrations/location"
+  migrations_dir: "file://migrations/location"
 http:
   serve_address: localhost:8080
-  base_path: /location/v1
+  base_path: /api/v1/drivers

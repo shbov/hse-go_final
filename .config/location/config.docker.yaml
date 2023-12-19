@@ -7,4 +7,4 @@ database:
   migrations_dir: "file://migrations/location"
 http:
   serve_address: localhost:8080
-  base_path: /location/v1
+  base_path: /api/v1/drivers

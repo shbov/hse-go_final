@@ -21,6 +21,7 @@ func getConfigPath() string {
 func main() {
 	path := getConfigPath()
 	config, err := app.NewConfig(path)
+	log.Println("Started service")
 
 	if err != nil {
 		log.Fatal(err.Error())
