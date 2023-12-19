@@ -7,6 +7,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
+	"github.com/shbov/hse-go_final/internal/location/httpadapter"
 	"net/http"
 	"os"
 	"os/signal"
@@ -46,7 +47,7 @@ func (a *app) Serve(ctx context.Context) error {
 }
 
 func (a *app) Shutdown() {
-	_, cancel := context.WithTimeout(context.Background(), a.config.App.ShutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), a.config.App.ShutdownTimeout)
 	defer cancel()
 
 	a.httpAdapter.Shutdown(ctx)
@@ -58,10 +59,9 @@ func New(ctx context.Context, config *Config) (App, error) {
 		return nil, err
 	}
 
-	httpAdapter: = nil
 	a := &app{
-		config: config,
-		httpAdapter: httpAdapter,
+		config:      config,
+		httpAdapter: httpadapter.New(&config.HTTP, nil),
 	}
 
 	return a, nil

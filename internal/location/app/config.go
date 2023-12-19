@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/shbov/hse-go_final/internal/location/httpadapter"
 	"io/ioutil"
 	"time"
 
@@ -14,6 +15,9 @@ const (
 	DefaultBasePath        = "/location/v1"
 	DefaultDSN             = "dsn://"
 	DefaultMigrationsDir   = "file://migrations/location"
+
+	DefaultAccessTokenCookie  = "access_token"
+	DefaultRefreshTokenCookie = "refresh_token"
 )
 
 type AppConfig struct {
@@ -28,8 +32,9 @@ type DatabaseConfig struct {
 }
 
 type Config struct {
-	App      AppConfig      `yaml:"app"`
-	Database DatabaseConfig `yaml:"database"`
+	App      AppConfig          `yaml:"app"`
+	Database DatabaseConfig     `yaml:"database"`
+	HTTP     httpadapter.Config `yaml:"http"`
 }
 
 func NewConfig(fileName string) (*Config, error) {
@@ -42,6 +47,12 @@ func NewConfig(fileName string) (*Config, error) {
 		App: AppConfig{
 			ShutdownTimeout: DefaultShutdownTimeout,
 			DSN:             DefaultDSN,
+		},
+		HTTP: httpadapter.Config{
+			ServeAddress:       DefaultServeAddress,
+			BasePath:           DefaultBasePath,
+			AccessTokenCookie:  DefaultAccessTokenCookie,
+			RefreshTokenCookie: DefaultRefreshTokenCookie,
 		},
 		Database: DatabaseConfig{
 			DSN:           DefaultDSN,
