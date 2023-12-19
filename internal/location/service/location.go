@@ -6,6 +6,6 @@ import (
 )
 
 type Location interface {
-	GetDriversInLocation(ctx context.Context, centerLat float64, centerLng float64, radius float64) ([]model.Location, error)
-	SetLocationByDriverId(ctx context.Context, driverId string, lat float64, lng float64) error
+	GetDriversInLocation(ctx context.Context, centerLat float32, centerLng float32, radius float32) ([]model.Location, error)
+	SetLocationByDriverId(ctx context.Context, driverId string, lat float32, lng float32) error
 }

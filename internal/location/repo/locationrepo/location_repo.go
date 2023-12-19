@@ -25,7 +25,7 @@ func (r *locationRepo) conn(ctx context.Context) Conn {
 	return r.pgxPool
 }
 
-func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat float64, lng float64) error {
+func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat float32, lng float32) error {
 	var _, err = r.conn(ctx).Exec(ctx, `INSERT INTO locations (driver_id, lat, lng) VALUES ($1, $2, $3)`, driverId, lat, lng)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat flo
 	return nil
 }
 
-func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float64, centerLng float64, radius float64) ([]model.Location, error) {
+func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float32, centerLng float32, radius float32) ([]model.Location, error) {
 	result := []model.Location{}
 
 	rows, err := r.conn(ctx).Query(
@@ -62,7 +62,7 @@ func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float
 	return result, nil
 }
 
-func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId string, lat float64, lng float64) error {
+func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId string, lat float32, lng float32) error {
 	_, err := r.conn(ctx).Exec(
 		ctx,
 		`UPDATE locations SET lat = $1, lng = $2 WHERE driver_id = $3`,
