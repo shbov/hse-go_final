@@ -13,13 +13,13 @@ info:
   title: Location service
   version: "1.0"
 paths:
-  /example:
-    get:
-      description: example method
+  /drivers/{driver_id}/location:
+    post:
+      description: method for saving driver's location
       responses:
         "200":
           description: OK
-      summary: example
+      summary: SetDriverLocation
 securityDefinitions:
   ApiKeyAuth:
     in: header

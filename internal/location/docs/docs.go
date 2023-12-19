@@ -24,10 +24,10 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/example": {
-            "get": {
-                "description": "example method",
-                "summary": "example",
+        "/drivers/{driver_id}/location": {
+            "post": {
+                "description": "method for saving driver's location",
+                "summary": "SetDriverLocation",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -98,8 +98,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a location service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	//LeftDelim:        "{{",
-	//RightDelim:       "}}",
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

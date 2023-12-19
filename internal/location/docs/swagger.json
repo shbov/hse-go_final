@@ -18,10 +18,10 @@
     "host": "localhost:9000",
     "basePath": "/api/v1",
     "paths": {
-        "/example": {
-            "get": {
-                "description": "example method",
-                "summary": "example",
+        "/drivers/{driver_id}/location": {
+            "post": {
+                "description": "method for saving driver's location",
+                "summary": "SetDriverLocation",
                 "responses": {
                     "200": {
                         "description": "OK"
