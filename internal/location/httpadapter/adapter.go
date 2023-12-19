@@ -62,8 +62,7 @@ type adapter struct {
 // @Description Обновление данных о позиции водителя
 // @Accept       json
 // @Param        driver_id    path     string  true  "ID of driver"  Format(uuid)
-// @Param        lat    body     number  false  "Latitude  in decimal degrees"
-// @Param        lng    body     number  false  "Longitude in decimal degrees"
+// @Param        lat    body     requests.SetDriverLocationBody  true  "Latitude and longitude  in decimal degrees"
 // @Success 200
 // @Failure 400
 // @Router /{driver_id}/location [post]
