@@ -50,7 +50,7 @@ func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float
 	for rows.Next() {
 		var location model.Location
 
-		if err := rows.Scan(&location.Id, &location.DriverId, &location.Lat, &location.Lng, &location.CreatedAt); err != nil {
+		if err := rows.Scan(&location.Id, &location.DriverId, &location.Lat, &location.Lng); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, errors.New("Didn't find drivers in that location\n")
 			}

@@ -9,9 +9,6 @@ type GetDriversByLocationReqBody struct {
 type GetDriversByLocationResBody struct {
 	DriverId string `json:"driver_id"`
 
-	DiverName  string `json:"name"`
-	DriverAuto string `json:"auto"`
-
 	Lat string `json:"lat"`
 	Lng string `json:"lng"`
 }
