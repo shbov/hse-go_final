@@ -96,6 +96,12 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, "Success operation")
 }
 
+// GetDriversByLocation godoc
+// @Summary GetDriversByLocation
+// @Description Поиск водителей по заданным координатам и радиусу
+// @Accept       json
+// @Success 200
+// @Router / [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()

@@ -24,6 +24,20 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/": {
+            "get": {
+                "description": "Поиск водителей по заданным координатам и радиусу",
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "GetDriversByLocation",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/{driver_id}/location": {
             "post": {
                 "description": "Обновление данных о позиции водителя",

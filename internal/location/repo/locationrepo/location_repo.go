@@ -36,16 +36,16 @@ func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat flo
 }
 
 func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float32, centerLng float32, radius float32) ([]model.Location, error) {
-	result := []model.Location{}
+	var result []model.Location
 
 	rows, err := r.conn(ctx).Query(
 		ctx,
 		`SELECT id, driver_id, lat, lng, created_at FROM locations WHERE (lat - $1) * (lat - $1) + (lng - $2) * (lng - $2) <= $3`,
 		centerLat, centerLng, radius*radius)
+	defer rows.Close()
 	if err != nil {
 		return result, err
 	}
-	defer rows.Close()
 
 	for rows.Next() {
 		var location model.Location
