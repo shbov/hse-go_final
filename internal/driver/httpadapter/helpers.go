@@ -4,9 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-errors/errors"
+	"github.com/google/uuid"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"net/http"
 )
+
+func IsValidUUID(u string) bool {
+	_, err := uuid.Parse(u)
+	return err == nil
+}
 
 // может, вообще этот файл вынести в pkg?
 

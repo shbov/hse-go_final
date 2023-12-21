@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/driver/docs"
+	"github.com/shbov/hse-go_final/internal/driver/model"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"github.com/toshi0607/chi-prometheus"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -64,6 +65,98 @@ type adapter struct {
 // @Router / [get]
 func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
 	panic("not implemented")
+}
+
+func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
+	userId := r.Header.Get("user_id")
+
+	trips, err := a.tripRepo.GetTripsByUserId(r.Context(), userId)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+	writeJSONResponse(w, http.StatusOK, trips)
+}
+
+func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
+	data, err := a.validate(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeJSONResponse(w, http.StatusOK, *data.Trip)
+}
+
+func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
+	data, err := a.validate(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = a.messageQueue.AcceptTrip(r.Context(), data.UserId, data.TripId)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, "Success operation")
+}
+
+func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
+	reason := r.URL.Query().Get("reason")
+
+	data, err := a.validate(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = a.messageQueue.CancelTrip(r.Context(), data.TripId, reason)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, "Success operation")
+}
+
+func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
+	data, err := a.validate(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = a.messageQueue.StartTrip(r.Context(), data.TripId)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, "Success operation")
+}
+
+func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
+	data, err := a.validate(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = a.messageQueue.EndTrip(r.Context(), data.TripId)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, "Success operation")
 }
 
 func (a *adapter) Serve(ctx context.Context) error {
@@ -178,4 +271,24 @@ func initTracerProvider(otlpAddress string) func() {
 			otel.Handle(err)
 		}
 	}
+}
+
+type requestData struct {
+	UserId string
+	TripId string
+	Trip   *model.Trip
+}
+
+func (a *adapter) validate(r *http.Request) (*requestData, error) {
+	userId := r.Header.Get("user_id")
+	tripId := chi.URLParam(r, "trip_id")
+	if !IsValidUUID(tripId) {
+		return nil, fmt.Errorf("invalid uuid")
+	}
+
+	trip, err := a.tripRepo.GetTripByUserIdTripId(r.Context(), userId, tripId)
+	if err != nil {
+		return nil, fmt.Errorf("trip not found")
+	}
+	return &requestData{UserId: userId, TripId: tripId, Trip: trip}, nil
 }
