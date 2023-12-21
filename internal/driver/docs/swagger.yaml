@@ -1,0 +1,57 @@
+basePath: /api/v1
+definitions:
+  requests.SetDriverLocationBody:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a location service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Location service
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Поиск водителей по заданным координатам и радиусу
+      responses:
+        "200":
+          description: OK
+      summary: GetDriversByLocation
+  /{driver_id}/location:
+    post:
+      consumes:
+      - application/json
+      description: Обновление данных о позиции водителя
+      parameters:
+      - description: ID of driver
+        format: uuid
+        in: path
+        name: driver_id
+        required: true
+        type: string
+      - description: Latitude and longitude  in decimal degrees
+        in: body
+        name: lat
+        required: true
+        schema:
+          $ref: '#/definitions/requests.SetDriverLocationBody'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: SetDriverLocation
+swagger: "2.0"

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/opentracing/opentracing-go"
-	"github.com/shbov/hse-go_final/pkg/driver/migration"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -47,21 +46,21 @@ func (a *app) Serve(ctx context.Context) error {
 		return fmt.Errorf("new mongo primary node connect error: %w", err)
 	}
 
-	a.mongoClient = client
-	database := client.Database(a.config.Mongo.Database)
+	//a.mongoClient = client
+	//database := client.Database(a.config.Mongo.Database)
 
-	if a.config.Migrations.Enabled {
-		migrationSvc := migration.NewMigrationsService(a.log, database)
-		err = migrationSvc.RunMigrations(a.config.Migrations.Path)
-		if err != nil {
-			return fmt.Errorf("run migration failed")
-		}
-	}
-
+	//if a.config.Migrations.Enabled {
+	//	migrationSvc := migration.NewMigrationsService(a.log, database)
+	//	err = migrationSvc.RunMigrations(a.config.Migrations.Path)
+	//	if err != nil {
+	//		return fmt.Errorf("run migration failed")
+	//	}
+	//}
+	//
 	//tripRepo, err := db.CreateTripRepo(a.log, database)
-	if err != nil {
-		return fmt.Errorf("url repo create failed: %w", err)
-	}
+	//if err != nil {
+	//	return fmt.Errorf("url repo create failed: %w", err)
+	//}
 	//go func() {
 	//	if err := a.httpAdapter.Serve(ctx); err != nil && err != http.ErrServerClosed {
 	//		lg.Fatal(err.Error())

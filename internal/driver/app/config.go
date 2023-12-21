@@ -22,6 +22,13 @@ type MongoConfig struct {
 	Uri      string `yaml:"uri"               env:"DEMO_MONGO_URI"`
 }
 
+type KafkaConfig struct {
+	Brokers  []string `yaml:"brokers"          env:"DEMO_MONGO_DATABASE" default:"driver"`
+	GroupID  string   `yaml:"group_id"         env:"DEMO_MONGO_URI"`
+	Topic    string   `yaml:"topic"            env:"DEMO_MONGO_URI"`
+	MaxBytes string   `yaml:"max_bytes"        env:"DEMO_MONGO_URI"`
+}
+
 type Config struct {
 	Environment string           `yaml:"environment" env:"DRIVER_ENVIRONMENT" default:"development"`
 	ServiceName string           `yaml:"service_name" env:"DRIVER_SERVICE_NAME" default:"driver-server"`
@@ -29,6 +36,7 @@ type Config struct {
 	Mongo       MongoConfig      `yaml:"mongo" env:"-"`
 	Migrations  MigrationsConfig `yaml:"migration" env:"-"`
 	App         AppConfig        `yaml:"app"`
+	Kafka       KafkaConfig      `yaml:"kafka"`
 }
 
 type ServerConfig struct {
