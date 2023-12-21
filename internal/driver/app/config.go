@@ -18,15 +18,15 @@ type AppConfig struct {
 }
 
 type MongoConfig struct {
-	Database string `yaml:"database"          env:"DEMO_MONGO_DATABASE" default:"driver"`
-	Uri      string `yaml:"uri"               env:"DEMO_MONGO_URI"`
+	Database string `yaml:"database"          env:"DRIVER_MONGO_DATABASE" default:"driver"`
+	Uri      string `yaml:"uri"               env:"DRIVER_MONGO_URI"`
 }
 
 type KafkaConfig struct {
-	Brokers  []string `yaml:"brokers"          env:"DEMO_MONGO_DATABASE" default:"driver"`
-	GroupID  string   `yaml:"group_id"         env:"DEMO_MONGO_URI"`
-	Topic    string   `yaml:"topic"            env:"DEMO_MONGO_URI"`
-	MaxBytes string   `yaml:"max_bytes"        env:"DEMO_MONGO_URI"`
+	Brokers  string `yaml:"brokers"          env:"DRIVER_KAFKA_BROKERS"`
+	GroupID  string `yaml:"group_id"         env:"DRIVER_KAFKA_GROUPID"`
+	Topic    string `yaml:"topic"            env:"DRIVER_KAFKA_TOPIC"`
+	MaxBytes string `yaml:"max_bytes"        env:"DRIVER_KAFKA_MAXBYTES"`
 }
 
 type Config struct {
@@ -44,7 +44,7 @@ type ServerConfig struct {
 }
 
 type MigrationsConfig struct {
-	URI     string `yaml:"uri"     env:"DRIVER_MIGRATION_URI"`
+	URI     string `yaml:"uri"     env:"DRIVER_MIGRATIONS_URI"`
 	Path    string `yaml:"path"    env:"DRIVER_MIGRATIONS_PATH"`
 	Enabled bool   `yaml:"enabled" env:"DRIVER_MIGRATIONS_ENABLED"   default:"false"`
 }
