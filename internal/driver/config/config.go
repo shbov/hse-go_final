@@ -1,4 +1,4 @@
-package app
+package config
 
 import (
 	"github.com/shbov/hse-go_final/internal/driver/httpadapter"

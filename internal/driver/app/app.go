@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
+	"github.com/shbov/hse-go_final/internal/driver/config"
+
 	"github.com/shbov/hse-go_final/internal/driver/httpadapter"
 	"github.com/shbov/hse-go_final/internal/driver/message_queue/drivermq"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
@@ -26,7 +28,7 @@ import (
 )
 
 type app struct {
-	config *Config
+	config *config.Config
 
 	tracer       opentracing.Tracer
 	messageQueue service.KafkaService
@@ -61,7 +63,7 @@ func (a *app) Shutdown() {
 	a.httpAdapter.Shutdown(ctx)
 }
 
-func New(ctx context.Context, config *Config) (App, error) {
+func New(ctx context.Context, config *config.Config) (App, error) {
 	db, err := initDB(ctx, config)
 	if err != nil {
 		return nil, err
@@ -91,7 +93,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 	return a, nil
 }
 
-func initDB(ctx context.Context, config *Config) (*mongo.Database, error) {
+func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Mongo.Uri))
 	if err != nil {

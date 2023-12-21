@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
-	"github.com/shbov/hse-go_final/internal/driver/app"
+	"github.com/shbov/hse-go_final/internal/driver/config"
 	"github.com/shbov/hse-go_final/internal/driver/message_queue"
 	"github.com/shbov/hse-go_final/internal/driver/model/commands"
 	"go.uber.org/zap"
@@ -141,7 +141,7 @@ func (d *driverKafka) EndTrip(ctx context.Context, tripId string) error {
 	return nil
 }
 
-func New(conf *app.KafkaConfig, log *zap.Logger) (message_queue.MessageQueue, error) {
+func New(conf *config.KafkaConfig, log *zap.Logger) (message_queue.MessageQueue, error) {
 	w := kafka.WriterConfig{
 		Brokers:  conf.Brokers,
 		Topic:    conf.Topic,

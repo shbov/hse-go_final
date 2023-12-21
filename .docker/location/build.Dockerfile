@@ -11,6 +11,7 @@ RUN go mod download
 
 COPY internal/location ./internal/location
 COPY migrations/location ./migrations/location
+COPY pkg ./pkg
 
 COPY cmd/location ./cmd/location
 

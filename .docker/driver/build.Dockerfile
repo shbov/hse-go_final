@@ -11,6 +11,7 @@ RUN go mod download
 
 COPY internal/driver ./internal/driver
 COPY migrations/driver ./migrations/driver
+COPY pkg ./pkg
 
 COPY cmd/driver ./cmd/driver
 
