@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/shbov/hse-go_final/internal/location/httpadapter"
+	"github.com/shbov/hse-go_final/pkg/config"
 	"os"
 	"time"
 )
@@ -37,48 +38,19 @@ type Config struct {
 func ParseConfigFromEnv() (*Config, error) {
 	return &Config{
 		App: AppConfig{
-			Debug:           getDebug(os.Getenv("APP_DEBUG")),
-			DSN:             getEnv(os.Getenv("APP_DSN"), DefaultDSN),
-			ShutdownTimeout: parseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), DefaultShutdownTimeout),
+			Debug:           config.GetDebug(os.Getenv("APP_DEBUG")),
+			DSN:             config.GetEnv(os.Getenv("APP_DSN"), DefaultDSN),
+			ShutdownTimeout: config.ParseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), DefaultShutdownTimeout),
 		},
 		Database: DatabaseConfig{
-			DSN:           getEnv(os.Getenv("LOCATION_DB_DSN"), DefaultDSN),
-			MigrationsDir: getEnv(os.Getenv("LOCATION_DB_MIGRATIONS_DIR"), DefaultMigrationsDir),
+			DSN:           config.GetEnv(os.Getenv("LOCATION_DB_DSN"), DefaultDSN),
+			MigrationsDir: config.GetEnv(os.Getenv("LOCATION_DB_MIGRATIONS_DIR"), DefaultMigrationsDir),
 		},
 		HTTP: httpadapter.Config{
-			ServeAddress:   getEnv(os.Getenv("LOCATION_HTTP_SERVE_ADDRESS"), DefaultServeAddress),
-			BasePath:       getEnv(os.Getenv("LOCATION_HTTP_BASE_PATH"), DefaultBasePath),
-			OtlpAddress:    getEnv(os.Getenv("HTTP_OTLP"), DefaultOtlpAddress),
-			SwaggerAddress: getEnv(os.Getenv("LOCATION_HTTP_SWAGGER_ADDRESS"), ""),
+			ServeAddress:   config.GetEnv(os.Getenv("LOCATION_HTTP_SERVE_ADDRESS"), DefaultServeAddress),
+			BasePath:       config.GetEnv(os.Getenv("LOCATION_HTTP_BASE_PATH"), DefaultBasePath),
+			OtlpAddress:    config.GetEnv(os.Getenv("HTTP_OTLP"), DefaultOtlpAddress),
+			SwaggerAddress: config.GetEnv(os.Getenv("LOCATION_HTTP_SWAGGER_ADDRESS"), ""),
 		},
 	}, nil
-}
-
-func getDebug(getenv string) bool {
-	if getenv == "" {
-		return false
-	}
-
-	return getenv == "true"
-}
-
-func getEnv(getenv string, address string) string {
-	if getenv == "" {
-		return address
-	}
-
-	return getenv
-}
-
-func parseDuration(getenv string, timeout time.Duration) time.Duration {
-	if getenv == "" {
-		return timeout
-	}
-
-	d, err := time.ParseDuration(getenv)
-	if err != nil {
-		return timeout
-	}
-
-	return d
 }
