@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	DefaultAppName         = "driver"
 	DefaultServeAddress    = "localhost:8081"
 	DefaultShutdownTimeout = 20 * time.Second
 	DefaultBasePath        = "/driver/v1/"
@@ -28,6 +29,7 @@ const (
 var DefaultKafkaBrokers = []string{"localhost:9092"}
 
 type AppConfig struct {
+	AppName         string        `yaml:"app_name"`
 	Debug           bool          `yaml:"debug"`
 	DSN             string        `yaml:"dsn"`
 	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
@@ -60,6 +62,7 @@ type Config struct {
 func ParseConfigFromEnv() (*Config, error) {
 	return &Config{
 		App: AppConfig{
+			AppName:         DefaultAppName,
 			Debug:           config.GetDebug(os.Getenv("APP_DEBUG")),
 			DSN:             config.GetEnv(os.Getenv("APP_DSN"), DefaultDSN),
 			ShutdownTimeout: config.ParseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), DefaultShutdownTimeout),
