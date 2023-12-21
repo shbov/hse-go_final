@@ -35,7 +35,7 @@ var (
 
 type adapter struct {
 	config  *Config
-	service service.Driver
+	service service.MessageQueue
 	server  *http.Server
 }
 
@@ -112,7 +112,7 @@ func (a *adapter) Shutdown(ctx context.Context) {
 
 func New(
 	config *Config,
-	service service.Driver) Adapter {
+	service service.MessageQueue) Adapter {
 
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress

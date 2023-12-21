@@ -1,26 +1,40 @@
 package driversvc
 
-//var _ service.Driver = (*driverService{})(nil)
-//
-//type driverService struct {
-//	repo repo.Location
-//}
-//
-//func (ls *locationService) SetLocationByDriverId(ctx context.Context, driverId string, lat float32, lng float32) error {
-//	err := ls.repo.SetLocationByDriverId(ctx, driverId, lat, lng)
-//	return err
-//}
-//
-//func (ls *locationService) GetDriversInLocation(ctx context.Context, centerLat float32, centerLng float32, radius float32) ([]model.Location, error) {
-//	result, err := ls.repo.GetDriversInLocation(ctx, centerLat, centerLng, radius)
-//	return result, err
-//}
-//
-//func New(repo repo.Location) service.Location {
-//	s := &locationService{
-//		repo: repo,
-//	}
-//
-//	log.Println("service successfully created")
-//	return s
-//}
+import (
+	"context"
+	"github.com/shbov/hse-go_final/internal/driver/message_queue"
+	"github.com/shbov/hse-go_final/internal/driver/service"
+	"log"
+)
+
+var _ service.MessageQueue = (*driverService)(nil)
+
+type driverService struct {
+	mq message_queue.MessageQueue
+}
+
+func (ls *driverService) CancelTrip(ctx context.Context, tripId string, reason string) error {
+	err := ls.mq.CancelTrip(ctx, tripId, reason)
+	return err
+}
+func (ls *driverService) AcceptTrip(ctx context.Context, driverId string, tripId string) error {
+	err := ls.mq.AcceptTrip(ctx, driverId, tripId)
+	return err
+}
+func (ls *driverService) StartTrip(ctx context.Context, tripId string) error {
+	err := ls.mq.StartTrip(ctx, tripId)
+	return err
+}
+func (ls *driverService) EndTrip(ctx context.Context, tripId string) error {
+	err := ls.mq.EndTrip(ctx, tripId)
+	return err
+}
+
+func New(mq message_queue.MessageQueue) service.MessageQueue {
+	s := &driverService{
+		mq: mq,
+	}
+
+	log.Println("service successfully created")
+	return s
+}
