@@ -2,10 +2,8 @@ package app
 
 import (
 	"github.com/shbov/hse-go_final/internal/location/httpadapter"
-	"io/ioutil"
+	"os"
 	"time"
-
-	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -15,9 +13,6 @@ const (
 	DefaultBasePath        = "/location/v1"
 	DefaultDSN             = "dsn://"
 	DefaultMigrationsDir   = "file://migrations/location"
-
-	DefaultAccessTokenCookie  = "access_token"
-	DefaultRefreshTokenCookie = "refresh_token"
 
 	DefaultOtlpAddress = "localhost:4317"
 )
@@ -39,33 +34,51 @@ type Config struct {
 	HTTP     httpadapter.Config `yaml:"http"`
 }
 
-func NewConfig(fileName string) (*Config, error) {
-	data, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return nil, err
-	}
-
-	cnf := Config{
+func ParseConfigFromEnv() (*Config, error) {
+	return &Config{
 		App: AppConfig{
-			ShutdownTimeout: DefaultShutdownTimeout,
-			DSN:             DefaultDSN,
-		},
-		HTTP: httpadapter.Config{
-			ServeAddress:       DefaultServeAddress,
-			BasePath:           DefaultBasePath,
-			AccessTokenCookie:  DefaultAccessTokenCookie,
-			RefreshTokenCookie: DefaultRefreshTokenCookie,
-			OtlpAddress:        DefaultOtlpAddress,
+			Debug:           getDebug(os.Getenv("APP_DEBUG")),
+			DSN:             getEnv(os.Getenv("APP_DSN"), DefaultDSN),
+			ShutdownTimeout: parseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), DefaultShutdownTimeout),
 		},
 		Database: DatabaseConfig{
-			DSN:           DefaultDSN,
-			MigrationsDir: DefaultMigrationsDir,
+			DSN:           getEnv(os.Getenv("LOCATION_DB_DSN"), DefaultDSN),
+			MigrationsDir: getEnv(os.Getenv("LOCATION_DB_MIGRATIONS_DIR"), DefaultMigrationsDir),
 		},
+		HTTP: httpadapter.Config{
+			ServeAddress:   getEnv(os.Getenv("LOCATION_HTTP_SERVE_ADDRESS"), DefaultServeAddress),
+			BasePath:       getEnv(os.Getenv("LOCATION_HTTP_BASE_PATH"), DefaultBasePath),
+			OtlpAddress:    getEnv(os.Getenv("HTTP_OTLP"), DefaultOtlpAddress),
+			SwaggerAddress: getEnv(os.Getenv("LOCATION_HTTP_SWAGGER_ADDRESS"), ""),
+		},
+	}, nil
+}
+
+func getDebug(getenv string) bool {
+	if getenv == "" {
+		return false
 	}
 
-	if err := yaml.Unmarshal(data, &cnf); err != nil {
-		return nil, err
+	return getenv == "true"
+}
+
+func getEnv(getenv string, address string) string {
+	if getenv == "" {
+		return address
 	}
 
-	return &cnf, nil
+	return getenv
+}
+
+func parseDuration(getenv string, timeout time.Duration) time.Duration {
+	if getenv == "" {
+		return timeout
+	}
+
+	d, err := time.ParseDuration(getenv)
+	if err != nil {
+		return timeout
+	}
+
+	return d
 }

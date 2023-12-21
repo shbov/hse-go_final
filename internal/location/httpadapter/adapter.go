@@ -103,6 +103,9 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 // @Success 200
 // @Router / [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "SetDriverLocation")
+	defer span.End()
+
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 

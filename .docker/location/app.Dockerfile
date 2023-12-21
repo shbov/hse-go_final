@@ -1,7 +1,7 @@
 FROM alpine
 
-WORKDIR /app
+WORKDIR /location
 
-COPY --from=build:latest /app/cmd/location/app ./app
+COPY --from=location-build:develop /app/cmd/location/location ./location
 
-CMD ["/app/app", "-c", "config.yaml"]
+CMD ["/location/location"]

@@ -1,7 +1,7 @@
 FROM alpine
 
-WORKDIR /app
+WORKDIR /driver
 
-COPY --from=build:latest /app/cmd/driver/app ./app
+COPY --from=driver-build:develop /app/cmd/driver/driver ./driver
 
-CMD ["/app/app", "-c", "config.yaml"]
+CMD ["/driver/driver"]

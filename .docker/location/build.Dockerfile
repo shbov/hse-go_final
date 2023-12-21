@@ -15,5 +15,5 @@ COPY migrations/location ./migrations/location
 COPY cmd/location ./cmd/location
 
 WORKDIR /app/cmd/location
-RUN go build -o app
+RUN go build -o location
 

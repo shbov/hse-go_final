@@ -3,30 +3,36 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/joho/godotenv"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/location/app"
 	"github.com/shbov/hse-go_final/internal/location/logger"
 	"log"
 )
 
-func getConfigPath() string {
-	var configPath string
+func getEnvPath() string {
+	var envPath string
 
-	flag.StringVar(&configPath, "c", "./.config/location/config.yaml", "path to config file")
+	flag.StringVar(&envPath, "env", ".env", "path to .env file")
 	flag.Parse()
 
-	return configPath
+	return envPath
 }
 
 func main() {
-	path := getConfigPath()
-	config, err := app.NewConfig(path)
+	envPath := getEnvPath()
+	err := godotenv.Load(envPath)
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v\n", err)
 
+	}
+
+	config, err := app.ParseConfigFromEnv()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	lg, err := logger.GetLogger(true, config.App.DSN, "development")
+	lg, err := logger.GetLogger(config.App.Debug, config.App.DSN, "development")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
