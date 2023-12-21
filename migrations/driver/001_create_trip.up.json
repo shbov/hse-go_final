@@ -1,23 +1,49 @@
 [
   {
-    "create": "driver",
+    "create": "trip",
     "validator": {
       "$jsonSchema": {
         "bsonType": "object",
         "required": [
           "id",
-          "name",
-          "auto"
+          "driver_id",
+          "from",
+          "to",
+          "price"
         ],
         "properties": {
           "id": {
             "bsonType": "string"
           },
-          "name": {
+          "driver_id": {
             "bsonType": "string"
           },
-          "auto": {
-            "bsonType": "string"
+          "from": {
+            "bsonType": "object",
+            "required": [ "lat", "lng" ],
+            "properties": {
+              "lat": { "bsonType": "decimal" },
+              "lng": { "bsonType": "decimal" }
+            }
+          },
+          "to": {
+            "bsonType": "object",
+            "required": [ "lat", "lng" ],
+            "properties": {
+              "lat": { "bsonType": "decimal" },
+              "lng": { "bsonType": "decimal" }
+            }
+          },
+          "price": {
+            "bsonType": "object",
+            "required": [ "amount", "currency" ],
+            "properties": {
+              "amount": { "bsonType": "decimal" },
+              "currency": { "bsonType": "string" }
+            }
+          },
+          "status": {
+            "bsonType": [ "string", "null" ]
           }
         }
       }
@@ -25,7 +51,7 @@
     "validationLevel": "strict"
   },
   {
-    "createIndexes": "driver",
+    "createIndexes": "trip",
     "indexes": [
       {
         "key": {

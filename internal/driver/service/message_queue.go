@@ -1,7 +1,7 @@
-package message_queue
+package service
 
 import (
-	"context"
+	"golang.org/x/net/context"
 )
 
 type MessageQueue interface {

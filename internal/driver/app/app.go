@@ -50,10 +50,10 @@ func (a *app) Serve(ctx context.Context) error {
 	//database := client.Database(a.config.Mongo.Database)
 
 	//if a.config.Migrations.Enabled {
-	//	migrationSvc := migration.NewMigrationsService(a.log, database)
+	//	migrationSvc := mongo_migration.NewMigrationsService(a.log, database)
 	//	err = migrationSvc.RunMigrations(a.config.Migrations.Path)
 	//	if err != nil {
-	//		return fmt.Errorf("run migration failed")
+	//		return fmt.Errorf("run mongo_migration failed")
 	//	}
 	//}
 	//

@@ -1,4 +1,4 @@
-package migration
+package mongo_migration
 
 import (
 	"errors"
@@ -43,10 +43,10 @@ func NewMigrationsService(log *zap.Logger, db *mongo.Database) *MigrationsServic
 
 func (m *MigrationsService) RunMigrations(path string) error {
 	if path == "" {
-		m.logger.Printf("migration was skipped")
+		m.logger.Printf("mongo_migration was skipped")
 	}
 	if m.db == nil {
-		return errors.New("run migration connect is not exists")
+		return errors.New("run mongo_migration connect does not exist")
 	}
 
 	driver, err := mongodb.WithInstance(
@@ -59,7 +59,7 @@ func (m *MigrationsService) RunMigrations(path string) error {
 
 	fsrc, err := (&file.File{}).Open(path)
 	if err != nil {
-		return fmt.Errorf("cannot open migration source: %w", err)
+		return fmt.Errorf("cannot open mongo_migration source: %w", err)
 	}
 
 	instance, err := migrate.NewWithInstance("file", fsrc, "mongo", driver)
@@ -69,7 +69,7 @@ func (m *MigrationsService) RunMigrations(path string) error {
 	instance.Log = m.logger
 
 	if err := instance.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("migration failed: instance.Up(): %w", err)
+		return fmt.Errorf("mongo_migration failed: instance.Up(): %w", err)
 	}
 
 	return nil
