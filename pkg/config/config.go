@@ -1,6 +1,9 @@
 package config
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 func GetDebug(getenv string) bool {
 	if getenv == "" {
@@ -10,9 +13,9 @@ func GetDebug(getenv string) bool {
 	return getenv == "true"
 }
 
-func GetEnv(getenv string, address string) string {
+func GetEnv(getenv string, def string) string {
 	if getenv == "" {
-		return address
+		return def
 	}
 
 	return getenv
@@ -29,4 +32,12 @@ func ParseDuration(getenv string, timeout time.Duration) time.Duration {
 	}
 
 	return d
+}
+
+func GetBrokers(getenv string, def []string) []string {
+	if getenv == "" {
+		return def
+	}
+
+	return strings.Split(getenv, ",")
 }

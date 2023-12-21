@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	AppName                = "location"
 	DefaultServeAddress    = "localhost:8080"
 	DefaultShutdownTimeout = 20 * time.Second
 	DefaultBasePath        = "/location/v1"
