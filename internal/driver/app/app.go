@@ -7,6 +7,7 @@ import (
 	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
 	"github.com/shbov/hse-go_final/internal/driver/httpadapter"
+	"github.com/shbov/hse-go_final/internal/driver/message_queue/drivermq"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"github.com/shbov/hse-go_final/pkg/mongo_migration"
@@ -70,12 +71,20 @@ func New(ctx context.Context, config *Config) (App, error) {
 		return nil, err
 	}
 
+	lg := zapctx.Logger(ctx)
+
 	tripService := triprepo.New(tripRepo)
 
+	messageQueue, err := drivermq.New(&config.Kafka, lg)
+	if err != nil {
+		return nil, err
+	}
+
 	a := &app{
-		config:      config,
-		tripService: tripService,
-		httpAdapter: httpadapter.New(&config.HTTP, tripService),
+		config:       config,
+		tripService:  tripService,
+		messageQueue: messageQueue,
+		httpAdapter:  httpadapter.New(&config.HTTP, tripService),
 	}
 
 	return a, nil
