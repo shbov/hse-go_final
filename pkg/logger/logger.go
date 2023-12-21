@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func GetLogger(debug bool, sentryDSN, env string) (*zap.Logger, error) {
+func GetLogger(debug bool, sentryDSN, env string, service string) (*zap.Logger, error) {
 	var err error
 	var l *zap.Logger
 
@@ -26,7 +26,7 @@ func GetLogger(debug bool, sentryDSN, env string) (*zap.Logger, error) {
 		Level: zapcore.ErrorLevel,
 		Tags: map[string]string{
 			"environment": env,
-			"app":         "driver",
+			"app":         service,
 		},
 	}
 	core, err := zapsentry.NewCore(cfg, zapsentry.NewSentryClientFromDSN(sentryDSN))

@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/app"
-	"github.com/shbov/hse-go_final/internal/driver/logger"
+	"github.com/shbov/hse-go_final/pkg/logger"
 	"log"
 )
 
@@ -32,7 +32,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	lg, err := logger.GetLogger(config.App.Debug, config.App.DSN, "development")
+	var env string
+	if config.App.Debug {
+		env = "development"
+	} else {
+		env = "production"
+	}
+	
+	lg, err := logger.GetLogger(config.App.Debug, config.App.DSN, env, config.App.AppName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
