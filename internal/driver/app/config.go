@@ -44,7 +44,7 @@ type ServerConfig struct {
 }
 
 type MigrationsConfig struct {
-	URI     string `yaml:"uri"     env:"DRIVER_MONGO_MIGRATION_URI"`
+	URI     string `yaml:"uri"     env:"DRIVER_MIGRATION_URI"`
 	Path    string `yaml:"path"    env:"DRIVER_MIGRATIONS_PATH"`
 	Enabled bool   `yaml:"enabled" env:"DRIVER_MIGRATIONS_ENABLED"   default:"false"`
 }

@@ -1,5 +1,12 @@
 package message_queue
 
+import (
+	"context"
+)
+
 type MessageQueue interface {
-	NotImplemented()
+	CancelTrip(ctx context.Context, tripId string, reason string) error
+	AcceptTrip(ctx context.Context, driverId string, tripId string) error
+	StartTrip(ctx context.Context, tripId string) error
+	EndTrip(ctx context.Context, tripId string) error
 }
