@@ -7,7 +7,6 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.uber.org/zap"
 	"log"
 	"time"
 )
@@ -15,8 +14,7 @@ import (
 var _ repo.Trip = (*tripRepo)(nil)
 
 type tripRepo struct {
-	logger *zap.Logger
-	db     *mongo.Database
+	db *mongo.Database
 }
 
 const (
@@ -65,7 +63,7 @@ func (r *tripRepo) GetTripByUserIdTripId(ctx context.Context, userId string, tri
 	return &trip, nil
 }
 
-func New(db *mongo.Database, logger *zap.Logger) (repo.Trip, error) {
+func New(db *mongo.Database) (repo.Trip, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -87,7 +85,6 @@ func New(db *mongo.Database, logger *zap.Logger) (repo.Trip, error) {
 
 	log.Println("repo successfully created")
 	return &tripRepo{
-		logger: logger,
-		db:     db,
+		db: db,
 	}, nil
 }

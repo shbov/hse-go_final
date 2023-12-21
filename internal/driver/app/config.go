@@ -50,18 +50,11 @@ type Config struct {
 	App  AppConfig          `yaml:"app"`
 	HTTP httpadapter.Config `yaml:"http"`
 
-	Environment string           `yaml:"environment"`
-	ServiceName string           `yaml:"service_name"`
-	Migrations  MigrationsConfig `yaml:"migration"`
+	Environment string `yaml:"environment"`
+	ServiceName string `yaml:"service_name"`
 
 	Mongo MongoConfig `yaml:"mongo"`
 	Kafka KafkaConfig `yaml:"kafka"`
-}
-
-type MigrationsConfig struct {
-	URI     string `yaml:"uri"`
-	Path    string `yaml:"path"`
-	Enabled bool   `yaml:"enabled"`
 }
 
 func ParseConfigFromEnv() (*Config, error) {

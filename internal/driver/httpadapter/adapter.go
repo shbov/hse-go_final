@@ -34,9 +34,10 @@ var (
 )
 
 type adapter struct {
-	config  *Config
-	service service.MessageQueue
-	server  *http.Server
+	config       *Config
+	messageQueue service.MessageQueue
+	tripRepo     service.TripService
+	server       *http.Server
 }
 
 // @title Location service
@@ -112,7 +113,8 @@ func (a *adapter) Shutdown(ctx context.Context) {
 
 func New(
 	config *Config,
-	service service.MessageQueue) Adapter {
+	messageQueue service.MessageQueue,
+	tripRepo service.TripService) Adapter {
 
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress
@@ -124,8 +126,9 @@ func New(
 
 	log.Println("adapter successfully created")
 	return &adapter{
-		config:  config,
-		service: service,
+		config:       config,
+		messageQueue: messageQueue,
+		tripRepo:     tripRepo,
 	}
 }
 
