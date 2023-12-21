@@ -1,4 +1,4 @@
-package driversvc
+package kafkasvc
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-var _ service.MessageQueue = (*driverService)(nil)
+var _ service.KafkaService = (*driverService)(nil)
 
 type driverService struct {
 	mq message_queue.MessageQueue
@@ -30,11 +30,11 @@ func (ls *driverService) EndTrip(ctx context.Context, tripId string) error {
 	return err
 }
 
-func New(mq message_queue.MessageQueue) service.MessageQueue {
+func New(mq message_queue.MessageQueue) service.KafkaService {
 	s := &driverService{
 		mq: mq,
 	}
 
-	log.Println("service successfully created")
+	log.Println("kafka service successfully created")
 	return s
 }

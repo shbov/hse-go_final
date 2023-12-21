@@ -10,6 +10,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/message_queue/drivermq"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
+	"github.com/shbov/hse-go_final/internal/driver/service/tripsvc"
 	"github.com/shbov/hse-go_final/pkg/mongo_migration"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -28,8 +29,8 @@ type app struct {
 	config *Config
 
 	tracer       opentracing.Tracer
-	messageQueue service.MessageQueue
-	tripService  service.TripService
+	messageQueue service.KafkaService
+	tripService  service.Trip
 	httpAdapter  httpadapter.Adapter
 }
 
@@ -73,7 +74,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 
 	lg := zapctx.Logger(ctx)
 
-	tripService := triprepo.New(tripRepo)
+	tripService := tripsvc.New(tripRepo)
 
 	messageQueue, err := drivermq.New(&config.Kafka, lg)
 	if err != nil {
@@ -84,7 +85,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 		config:       config,
 		tripService:  tripService,
 		messageQueue: messageQueue,
-		httpAdapter:  httpadapter.New(&config.HTTP, tripService),
+		httpAdapter:  httpadapter.New(&config.HTTP, messageQueue, tripService),
 	}
 
 	return a, nil

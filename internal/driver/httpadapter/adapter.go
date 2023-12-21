@@ -35,8 +35,8 @@ var (
 
 type adapter struct {
 	config       *Config
-	messageQueue service.MessageQueue
-	tripRepo     service.TripService
+	messageQueue service.KafkaService
+	tripRepo     service.Trip
 	server       *http.Server
 }
 
@@ -113,8 +113,8 @@ func (a *adapter) Shutdown(ctx context.Context) {
 
 func New(
 	config *Config,
-	messageQueue service.MessageQueue,
-	tripRepo service.TripService) Adapter {
+	messageQueue service.KafkaService,
+	tripRepo service.Trip) Adapter {
 
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress

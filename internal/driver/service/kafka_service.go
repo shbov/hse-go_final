@@ -4,7 +4,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-type MessageQueue interface {
+type KafkaService interface {
 	CancelTrip(ctx context.Context, tripId string, reason string) error
 	AcceptTrip(ctx context.Context, driverId string, tripId string) error
 	StartTrip(ctx context.Context, tripId string) error
