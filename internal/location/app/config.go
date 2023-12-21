@@ -15,7 +15,8 @@ const (
 	DefaultDSN             = "dsn://"
 	DefaultMigrationsDir   = "file://migrations/location"
 
-	DefaultOtlpAddress = "localhost:4317"
+	DefaultOtlpAddress    = "localhost:4317"
+	DefaultSwaggerAddress = "localhost:8080"
 )
 
 type AppConfig struct {
@@ -50,7 +51,7 @@ func ParseConfigFromEnv() (*Config, error) {
 			ServeAddress:   config.GetEnv(os.Getenv("LOCATION_HTTP_SERVE_ADDRESS"), DefaultServeAddress),
 			BasePath:       config.GetEnv(os.Getenv("LOCATION_HTTP_BASE_PATH"), DefaultBasePath),
 			OtlpAddress:    config.GetEnv(os.Getenv("HTTP_OTLP"), DefaultOtlpAddress),
-			SwaggerAddress: config.GetEnv(os.Getenv("LOCATION_HTTP_SWAGGER_ADDRESS"), ""),
+			SwaggerAddress: config.GetEnv(os.Getenv("LOCATION_HTTP_SWAGGER_ADDRESS"), DefaultSwaggerAddress),
 		},
 	}, nil
 }

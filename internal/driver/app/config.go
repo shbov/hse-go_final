@@ -1,64 +1,85 @@
 package app
 
 import (
-	"fmt"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/jinzhu/configor"
+	"github.com/shbov/hse-go_final/internal/driver/httpadapter"
+	"github.com/shbov/hse-go_final/pkg/config"
+	"os"
 	"time"
 )
 
 const (
-	EnvProduction = "PRODUCTION"
-	EnvPrefix     = "DRIVER"
+	AppName                = "driver"
+	DefaultServeAddress    = "localhost:8081"
+	DefaultShutdownTimeout = 20 * time.Second
+	DefaultBasePath        = "/driver/v1/"
+	DefaultDSN             = "dsn://"
+	DefaultMigrationsDir   = "file://migrations/location"
+
+	DefaultOtlpAddress    = "localhost:4317"
+	DefaultSwaggerAddress = "localhost:8081"
 )
 
 type AppConfig struct {
 	Debug           bool          `yaml:"debug"`
+	DSN             string        `yaml:"dsn"`
 	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
 }
 
 type MongoConfig struct {
-	Database string `yaml:"database"          env:"DRIVER_MONGO_DATABASE" default:"driver"`
-	Uri      string `yaml:"uri"               env:"DRIVER_MONGO_URI"`
+	Database string `yaml:"database"`
+	Uri      string `yaml:"uri"`
 }
 
 type KafkaConfig struct {
-	Brokers  string `yaml:"brokers"          env:"DRIVER_KAFKA_BROKERS"`
-	GroupID  string `yaml:"group_id"         env:"DRIVER_KAFKA_GROUPID"`
-	Topic    string `yaml:"topic"            env:"DRIVER_KAFKA_TOPIC"`
-	MaxBytes string `yaml:"max_bytes"        env:"DRIVER_KAFKA_MAXBYTES"`
+	Brokers  []string `yaml:"brokers"`
+	GroupID  string   `yaml:"group_id"`
+	Topic    string   `yaml:"topic"`
+	MaxBytes string   `yaml:"max_bytes"`
 }
 
 type Config struct {
-	Environment string           `yaml:"environment" env:"DRIVER_ENVIRONMENT" default:"development"`
-	ServiceName string           `yaml:"service_name" env:"DRIVER_SERVICE_NAME" default:"driver-server"`
-	Server      ServerConfig     `yaml:"server"         env:"-"`
-	Mongo       MongoConfig      `yaml:"mongo" env:"-"`
-	Migrations  MigrationsConfig `yaml:"migration" env:"-"`
-	App         AppConfig        `yaml:"app"`
-	Kafka       KafkaConfig      `yaml:"kafka"`
-}
+	App  AppConfig          `yaml:"app"`
+	HTTP httpadapter.Config `yaml:"http"`
 
-type ServerConfig struct {
-	HttpServerPort int `yaml:"http_server_port" env:"DRIVER_HTTP_SERVER_PORT" default:"8080"`
+	Environment string           `yaml:"environment"`
+	ServiceName string           `yaml:"service_name"`
+	Migrations  MigrationsConfig `yaml:"migration"`
+
+	Mongo MongoConfig `yaml:"mongo"`
+	Kafka KafkaConfig `yaml:"kafka"`
 }
 
 type MigrationsConfig struct {
-	URI     string `yaml:"uri"     env:"DRIVER_MIGRATIONS_URI"`
-	Path    string `yaml:"path"    env:"DRIVER_MIGRATIONS_PATH"`
-	Enabled bool   `yaml:"enabled" env:"DRIVER_MIGRATIONS_ENABLED"   default:"false"`
+	URI     string `yaml:"uri"`
+	Path    string `yaml:"path"`
+	Enabled bool   `yaml:"enabled"`
 }
 
-func NewConfig(path string) (*Config, error) {
-	var cfg Config
-	loader := configor.New(&configor.Config{ENVPrefix: EnvPrefix, ErrorOnUnmatchedKeys: true})
-	if err := loader.Load(&cfg, path); err != nil {
-		return nil, fmt.Errorf("failed to load config: %w", err)
-	}
+func ParseConfigFromEnv() (*Config, error) {
+	return &Config{
+		App: AppConfig{
+			Debug:           config.GetDebug(os.Getenv("APP_DEBUG")),
+			DSN:             config.GetEnv(os.Getenv("APP_DSN"), "dsn://"),
+			ShutdownTimeout: config.ParseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), 20*time.Second),
+		},
 
-	if cfg.Environment != EnvProduction {
-		spew.Dump(cfg)
-	}
+		HTTP: httpadapter.Config{
+			ServeAddress:   config.GetEnv(os.Getenv("DRIVER_HTTP_SERVE_ADDRESS"), DefaultServeAddress),
+			BasePath:       config.GetEnv(os.Getenv("DRIVER_HTTP_BASE_PATH"), DefaultBasePath),
+			OtlpAddress:    config.GetEnv(os.Getenv("HTTP_OTLP"), DefaultOtlpAddress),
+			SwaggerAddress: config.GetEnv(os.Getenv("DRIVER_HTTP_SWAGGER_ADDRESS"), DefaultSwaggerAddress),
+		},
 
-	return &cfg, nil
+		Mongo: MongoConfig{
+			Database: "driver",
+			Uri:      "mongodb://localhost:27017",
+		},
+
+		Kafka: KafkaConfig{
+			Brokers:  []string{"localhost:9092"},
+			GroupID:  "driver",
+			Topic:    "driver",
+			MaxBytes: "2000000",
+		},
+	}, nil
 }
