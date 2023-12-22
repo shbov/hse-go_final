@@ -23,6 +23,20 @@ const (
 	tripCollection        = "trip"
 )
 
+func (r *tripRepo) AddTrip(ctx context.Context, trip model.Trip) error {
+	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
+	defer cancel()
+
+	coll := r.db.Collection(tripCollection)
+
+	_, err := coll.InsertOne(ctx, trip)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *tripRepo) GetTripsByUserId(ctx context.Context, userId string) ([]model.Trip, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()

@@ -22,16 +22,16 @@
             "bsonType": "object",
             "required": [ "lat", "lng" ],
             "properties": {
-              "lat": { "bsonType": "decimal" },
-              "lng": { "bsonType": "decimal" }
+              "lat": { "bsonType": "float" },
+              "lng": { "bsonType": "float" }
             }
           },
           "to": {
             "bsonType": "object",
             "required": [ "lat", "lng" ],
             "properties": {
-              "lat": { "bsonType": "decimal" },
-              "lng": { "bsonType": "decimal" }
+              "lat": { "bsonType": "float" },
+              "lng": { "bsonType": "float" }
             }
           },
           "price": {

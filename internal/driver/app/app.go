@@ -7,9 +7,9 @@ import (
 	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
 	"github.com/shbov/hse-go_final/internal/driver/config"
-
 	"github.com/shbov/hse-go_final/internal/driver/httpadapter"
 	"github.com/shbov/hse-go_final/internal/driver/message_queue/drivermq"
+	"github.com/shbov/hse-go_final/internal/driver/model"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"github.com/shbov/hse-go_final/internal/driver/service/tripsvc"
@@ -112,9 +112,17 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 	migrationSvc := mongo_migration.NewMigrationsService(lg, database)
 	err = migrationSvc.RunMigrations(config.Mongo.MigrationsDir)
 	if err != nil {
-		return nil, fmt.Errorf("run migrations failed")
+		return nil, err // fmt.Errorf("run migrations failed")
 	}
 	lg.Info("mongo db migrations finished")
+
+	// uncomment if db population is needed
+	if _, err := database.Collection("trip").InsertOne(ctx, model.TripExample1); err != nil {
+		return nil, err
+	}
+	if _, err := database.Collection("trip").InsertOne(ctx, model.TripExample2); err != nil {
+		return nil, err
+	}
 
 	return database, nil
 }

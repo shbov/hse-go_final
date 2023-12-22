@@ -14,6 +14,10 @@ type tripService struct {
 	tripRepo repo.Trip
 }
 
+func (ts *tripService) AddTrip(ctx context.Context, trip model.Trip) error {
+	return ts.AddTrip(ctx, trip)
+}
+
 func (ts *tripService) GetTripsByUserId(ctx context.Context, userId string) ([]model.Trip, error) {
 	result, err := ts.tripRepo.GetTripsByUserId(ctx, userId)
 	return result, err
