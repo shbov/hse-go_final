@@ -1,15 +1,13 @@
 package model
 
-import "github.com/shopspring/decimal"
-
 type coordinates struct {
 	Lat float32 `json:"lat"`
 	Lng float32 `json:"lng"`
 }
 
 type price struct {
-	Amount   decimal.Decimal `json:"amount"`
-	Currency string          `json:"currency"`
+	Amount   float32 `json:"amount"`
+	Currency string  `json:"currency"`
 }
 
 type Trip struct {
@@ -29,7 +27,7 @@ var TripExample1 = Trip{
 	DriverId: "c5ced280-dd79-411f-b699-bb1ef010cd77",
 	From:     coordinates{10.0, 10.0},
 	To:       coordinates{12.0, 12.0},
-	Price:    price{decimal.New(99, 5), "RUB"},
+	Price:    price{99.5, "RUB"},
 	Status:   "DRIVER_SEARCH",
 }
 
@@ -38,6 +36,6 @@ var TripExample2 = Trip{
 	DriverId: "23613a20-5787-42ef-ab81-3524a8e0c33f",
 	From:     coordinates{44.0, 38.0},
 	To:       coordinates{45.0, 37.0},
-	Price:    price{decimal.New(1235, 51), "RUB"},
+	Price:    price{1235.51, "RUB"},
 	Status:   "DRIVER_SEARCH",
 }
