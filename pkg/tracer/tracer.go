@@ -11,7 +11,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"google.golang.org/grpc"
-	"log"
 	"time"
 )
 
@@ -31,7 +30,7 @@ func InitTracerProvider(ctx context.Context, otlpAddress string, serviceName str
 		lg.Fatal(err.Error())
 	}
 
-	log.Println("otlp address is " + otlpAddress)
+	lg.Info("otlp address is " + otlpAddress)
 	traceClient := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(otlpAddress),

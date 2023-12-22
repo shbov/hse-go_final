@@ -2,9 +2,9 @@ package kafkasvc
 
 import (
 	"context"
+	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/message_queue"
 	"github.com/shbov/hse-go_final/internal/driver/service"
-	"log"
 )
 
 var _ service.KafkaService = (*driverService)(nil)
@@ -30,11 +30,13 @@ func (ls *driverService) EndTrip(ctx context.Context, tripId string) error {
 	return err
 }
 
-func New(mq message_queue.MessageQueue) service.KafkaService {
+func New(ctx context.Context, mq message_queue.MessageQueue) service.KafkaService {
+	lg := zapctx.Logger(ctx)
+
 	s := &driverService{
 		mq: mq,
 	}
 
-	log.Println("kafka service successfully created")
+	lg.Info("kafka service successfully created")
 	return s
 }

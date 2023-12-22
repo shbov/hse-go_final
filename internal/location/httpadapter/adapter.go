@@ -4,16 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/juju/zaputil/zapctx"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/shbov/hse-go_final/internal/location/docs"
 	"github.com/shbov/hse-go_final/internal/location/model/requests"
 	"github.com/shbov/hse-go_final/internal/location/service"
 	"github.com/shbov/hse-go_final/pkg/httpHelpers"
 	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
 	"github.com/toshi0607/chi-prometheus"
-	"log"
-
-	"github.com/juju/zaputil/zapctx"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
@@ -174,9 +172,10 @@ func (a *adapter) Shutdown(ctx context.Context) {
 }
 
 func New(
+	ctx context.Context,
 	config *Config,
 	service service.Location) Adapter {
-
+	lg := zapctx.Logger(ctx)
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress
 	} else {
@@ -185,7 +184,7 @@ func New(
 
 	docs.SwaggerInfo.BasePath = config.BasePath
 
-	log.Println("adapter successfully created")
+	lg.Info("adapter successfully created")
 	return &adapter{
 		config:  config,
 		service: service,

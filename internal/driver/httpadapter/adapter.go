@@ -10,8 +10,6 @@ import (
 	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
 	"github.com/toshi0607/chi-prometheus"
 
-	"log"
-
 	"github.com/juju/zaputil/zapctx"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -213,9 +211,11 @@ func (a *adapter) Shutdown(ctx context.Context) {
 }
 
 func New(
+	ctx context.Context,
 	config *Config,
 	messageQueue service.KafkaService,
 	tripRepo service.Trip) Adapter {
+	lg := zapctx.Logger(ctx)
 
 	if config.SwaggerAddress != "" {
 		docs.SwaggerInfo.Host = config.SwaggerAddress
@@ -225,7 +225,7 @@ func New(
 
 	docs.SwaggerInfo.BasePath = config.BasePath
 
-	log.Println("adapter successfully created")
+	lg.Info("adapter successfully created")
 	return &adapter{
 		config:       config,
 		messageQueue: messageQueue,

@@ -2,10 +2,10 @@ package tripsvc
 
 import (
 	"context"
+	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/model"
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
-	"log"
 )
 
 var _ service.Trip = (*tripService)(nil)
@@ -23,11 +23,12 @@ func (ts *tripService) GetTripByUserIdTripId(ctx context.Context, userId string,
 	return trip, err
 }
 
-func New(tripRepo repo.Trip) service.Trip {
+func New(ctx context.Context, tripRepo repo.Trip) service.Trip {
+	lg := zapctx.Logger(ctx)
 	s := &tripService{
 		tripRepo: tripRepo,
 	}
 
-	log.Println("trip service successfully created")
+	lg.Info("trip service successfully created")
 	return s
 }

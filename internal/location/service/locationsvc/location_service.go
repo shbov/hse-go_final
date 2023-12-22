@@ -1,11 +1,11 @@
 package locationsvc
 
 import (
+	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/location/model"
 	"github.com/shbov/hse-go_final/internal/location/repo"
 	"github.com/shbov/hse-go_final/internal/location/service"
 	"golang.org/x/net/context"
-	"log"
 )
 
 var _ service.Location = (*locationService)(nil)
@@ -24,11 +24,12 @@ func (ls *locationService) GetDriversInLocation(ctx context.Context, centerLat f
 	return result, err
 }
 
-func New(repo repo.Location) service.Location {
+func New(ctx context.Context, repo repo.Location) service.Location {
+	lg := zapctx.Logger(ctx)
 	s := &locationService{
 		repo: repo,
 	}
 
-	log.Println("service successfully created")
+	lg.Info("service successfully created")
 	return s
 }

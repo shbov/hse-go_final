@@ -10,7 +10,6 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/message_queue"
 	"github.com/shbov/hse-go_final/internal/driver/model/commands"
 	"go.uber.org/zap"
-	"log"
 	"time"
 )
 
@@ -161,6 +160,6 @@ func New(conf *config.KafkaConfig, lg *zap.Logger) (message_queue.MessageQueue, 
 		rc: r,
 	}
 
-	log.Println("message_queue successfully created")
+	lg.Info("message_queue successfully created")
 	return d, nil
 }

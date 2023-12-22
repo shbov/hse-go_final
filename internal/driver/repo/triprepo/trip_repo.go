@@ -3,11 +3,11 @@ package triprepo
 import (
 	"context"
 	"errors"
+	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/model"
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 	"time"
 )
 
@@ -63,10 +63,11 @@ func (r *tripRepo) GetTripByUserIdTripId(ctx context.Context, userId string, tri
 	return &trip, nil
 }
 
-func New(db *mongo.Database) (repo.Trip, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+func New(ctx context.Context, db *mongo.Database) (repo.Trip, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
 	defer cancel()
 
+	lg := zapctx.Logger(ctx)
 	if db != nil {
 		err := db.CreateCollection(ctx, tripCollection)
 		if err != nil {
@@ -83,7 +84,7 @@ func New(db *mongo.Database) (repo.Trip, error) {
 		}
 	}
 
-	log.Println("repo successfully created")
+	lg.Info("repo successfully created")
 	return &tripRepo{
 		db: db,
 	}, nil

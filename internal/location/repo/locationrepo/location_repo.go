@@ -6,10 +6,10 @@ import (
 	"errors"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/location/model"
 	"github.com/shbov/hse-go_final/internal/location/repo"
 	"github.com/shbov/hse-go_final/internal/location/service"
-	"log"
 )
 
 var _ repo.Location = (*locationRepo)(nil)
@@ -83,11 +83,12 @@ func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId strin
 	return nil
 }
 
-func New(pgxPool *pgxpool.Pool) (repo.Location, error) {
+func New(ctx context.Context, pgxPool *pgxpool.Pool) (repo.Location, error) {
+	lg := zapctx.Logger(ctx)
 	r := &locationRepo{
 		pgxPool: pgxPool,
 	}
 
-	log.Println("repo successfully created")
+	lg.Info("repo successfully created")
 	return r, nil
 }

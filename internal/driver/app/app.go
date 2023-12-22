@@ -17,7 +17,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -45,7 +44,7 @@ func (a *app) Serve(ctx context.Context) error {
 	signal.Notify(done, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
-		log.Println("server successfully started at " + a.config.HTTP.ServeAddress)
+		lg.Info("server successfully started at " + a.config.HTTP.ServeAddress)
 		if err := a.httpAdapter.Serve(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			lg.Fatal(err.Error())
 		}
@@ -54,7 +53,7 @@ func (a *app) Serve(ctx context.Context) error {
 	<-done
 
 	a.Shutdown(ctx)
-	log.Println("server successfully stopped")
+	lg.Info("server successfully stopped")
 	return nil
 }
 
@@ -73,12 +72,12 @@ func New(ctx context.Context, config *config.Config) (App, error) {
 		return nil, err
 	}
 
-	tripRepo, err := triprepo.New(db)
+	tripRepo, err := triprepo.New(ctx, db)
 	if err != nil {
 		return nil, err
 	}
 
-	tripService := tripsvc.New(tripRepo)
+	tripService := tripsvc.New(ctx, tripRepo)
 	messageQueue, err := drivermq.New(&config.Kafka, lg)
 	if err != nil {
 		return nil, err
@@ -88,10 +87,10 @@ func New(ctx context.Context, config *config.Config) (App, error) {
 		config:       config,
 		tripService:  tripService,
 		messageQueue: messageQueue,
-		httpAdapter:  httpadapter.New(&config.HTTP, messageQueue, tripService),
+		httpAdapter:  httpadapter.New(ctx, &config.HTTP, messageQueue, tripService),
 	}
 
-	log.Println("app successfully created")
+	lg.Info("app successfully created")
 	return a, nil
 }
 
@@ -115,7 +114,7 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 	if err != nil {
 		return nil, fmt.Errorf("run migrations failed")
 	}
-	log.Println("mongo db migrations finished")
+	lg.Info("mongo db migrations finished")
 
 	return database, nil
 }
