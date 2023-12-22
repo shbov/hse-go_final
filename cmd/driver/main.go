@@ -28,28 +28,28 @@ func main() {
 
 	}
 
-	config, err := config.ParseConfigFromEnv()
+	cfg, err := config.ParseConfigFromEnv()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	var env string
-	if config.App.Debug {
+	if cfg.App.Debug {
 		env = "development"
 	} else {
 		env = "production"
 	}
 
-	lg, err := logger.GetLogger(config.App.Debug, config.App.DSN, env, config.App.AppName)
+	lg, err := logger.GetLogger(cfg.App.Debug, cfg.App.DSN, env, cfg.App.AppName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	ctx := zapctx.WithLogger(context.Background(), lg)
-	a, err := app.New(ctx, config)
+	a, err := app.New(ctx, cfg)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		lg.Fatal(err.Error())
 	}
 
 	if err := a.Serve(ctx); err != nil {

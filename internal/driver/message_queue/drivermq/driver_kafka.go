@@ -10,6 +10,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/message_queue"
 	"github.com/shbov/hse-go_final/internal/driver/model/commands"
 	"go.uber.org/zap"
+	"log"
 	"time"
 )
 
@@ -141,12 +142,12 @@ func (d *driverKafka) EndTrip(ctx context.Context, tripId string) error {
 	return nil
 }
 
-func New(conf *config.KafkaConfig, log *zap.Logger) (message_queue.MessageQueue, error) {
+func New(conf *config.KafkaConfig, lg *zap.Logger) (message_queue.MessageQueue, error) {
 	w := kafka.WriterConfig{
 		Brokers:  conf.Brokers,
 		Topic:    conf.Topic,
 		Balancer: &kafka.LeastBytes{},
-		Logger:   kafka.LoggerFunc(logWrap{log}.logf),
+		Logger:   kafka.LoggerFunc(logWrap{lg}.logf),
 	}
 
 	r := kafka.ReaderConfig{
@@ -160,6 +161,6 @@ func New(conf *config.KafkaConfig, log *zap.Logger) (message_queue.MessageQueue,
 		rc: r,
 	}
 
-	log.Info("message_queue successfully created")
+	log.Println("message_queue successfully created")
 	return d, nil
 }

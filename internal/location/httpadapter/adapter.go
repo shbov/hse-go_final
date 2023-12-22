@@ -7,27 +7,20 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/docs"
 	"github.com/shbov/hse-go_final/internal/location/model/requests"
 	"github.com/shbov/hse-go_final/internal/location/service"
+	"github.com/shbov/hse-go_final/pkg/httpHelpers"
+	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
 	"github.com/toshi0607/chi-prometheus"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/propagation"
-	"google.golang.org/grpc"
 	"log"
 
 	"github.com/juju/zaputil/zapctx"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/riandyrn/otelchi"
-	"go.opentelemetry.io/otel"
-	"net/http"
-	"time"
-
 	"github.com/go-chi/chi/v5"
+	"github.com/riandyrn/otelchi"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel"
 	"moul.io/chizap"
+	"net/http"
 )
 
 var (
@@ -93,7 +86,7 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeResponse(w, http.StatusOK, "Success operation")
+	httpHelpers.WriteResponse(w, http.StatusOK, "Success operation")
 }
 
 // GetDriversByLocation godoc
@@ -103,7 +96,7 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 // @Success 200
 // @Router / [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
-	_, span := tracer.Start(r.Context(), "SetDriverLocation")
+	_, span := tracer.Start(r.Context(), "GetDriversByLocation")
 	defer span.End()
 
 	decoder := json.NewDecoder(r.Body)
@@ -127,13 +120,13 @@ func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSONResponse(w, http.StatusOK, result)
+	httpHelpers.WriteJSONResponse(w, http.StatusOK, result)
 }
 
 func (a *adapter) Serve(ctx context.Context) error {
 	lg := zapctx.Logger(ctx)
 
-	shut := initTracerProvider(a.config.OtlpAddress)
+	shut := tracer2.InitTracerProvider(ctx, a.config.OtlpAddress, ServiceName)
 	defer shut()
 
 	r := chi.NewRouter()
@@ -173,7 +166,11 @@ func (a *adapter) Serve(ctx context.Context) error {
 }
 
 func (a *adapter) Shutdown(ctx context.Context) {
-	_ = a.server.Shutdown(ctx)
+	lg := zapctx.Logger(ctx)
+	err := a.server.Shutdown(ctx)
+	if err != nil {
+		lg.Fatal(err.Error())
+	}
 }
 
 func New(
@@ -192,53 +189,5 @@ func New(
 	return &adapter{
 		config:  config,
 		service: service,
-	}
-}
-
-func initTracerProvider(otlpAddress string) func() {
-	ctx := context.Background()
-	res, err := resource.New(ctx,
-		resource.WithFromEnv(),
-		resource.WithProcess(),
-		resource.WithTelemetrySDK(),
-		resource.WithHost(),
-		resource.WithAttributes(
-			semconv.ServiceNameKey.String(ServiceName),
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("otlp address is " + otlpAddress)
-	traceClient := otlptracegrpc.NewClient(
-		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint(otlpAddress),
-		otlptracegrpc.WithDialOption(grpc.WithBlock()))
-	sctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-
-	traceExp, err := otlptrace.New(sctx, traceClient)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bsp := sdktrace.NewBatchSpanProcessor(traceExp)
-	tracerProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithResource(res),
-		sdktrace.WithSpanProcessor(bsp),
-	)
-
-	// set global propagator to tracecontext (the default is no-op).
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	otel.SetTracerProvider(tracerProvider)
-
-	return func() {
-		cxt, cancel := context.WithTimeout(ctx, time.Second)
-		defer cancel()
-		if err := traceExp.Shutdown(cxt); err != nil {
-			otel.Handle(err)
-		}
 	}
 }

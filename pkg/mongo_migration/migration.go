@@ -8,19 +8,14 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/file"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
-	"time"
 )
 
-const (
-	disconnectTimeout = 30 * time.Second
-)
+var _ migrate.Logger = (*migrationLogger)(nil)
 
 type MigrationsService struct {
 	logger migrate.Logger
 	db     *mongo.Database
 }
-
-var _ migrate.Logger = (*migrationLogger)(nil)
 
 type migrationLogger struct {
 	l *zap.Logger

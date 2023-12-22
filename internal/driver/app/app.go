@@ -27,6 +27,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
+var _ App = (*app)(nil)
+
 type app struct {
 	config *config.Config
 
@@ -51,19 +53,21 @@ func (a *app) Serve(ctx context.Context) error {
 
 	<-done
 
-	a.Shutdown()
+	a.Shutdown(ctx)
 	log.Println("server successfully stopped")
 	return nil
 }
 
-func (a *app) Shutdown() {
-	ctx, cancel := context.WithTimeout(context.Background(), a.config.App.ShutdownTimeout)
+func (a *app) Shutdown(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, a.config.App.ShutdownTimeout)
 	defer cancel()
 
 	a.httpAdapter.Shutdown(ctx)
 }
 
 func New(ctx context.Context, config *config.Config) (App, error) {
+	lg := zapctx.Logger(ctx)
+
 	db, err := initDB(ctx, config)
 	if err != nil {
 		return nil, err
@@ -74,10 +78,7 @@ func New(ctx context.Context, config *config.Config) (App, error) {
 		return nil, err
 	}
 
-	lg := zapctx.Logger(ctx)
-
 	tripService := tripsvc.New(tripRepo)
-
 	messageQueue, err := drivermq.New(&config.Kafka, lg)
 	if err != nil {
 		return nil, err
@@ -90,11 +91,11 @@ func New(ctx context.Context, config *config.Config) (App, error) {
 		httpAdapter:  httpadapter.New(&config.HTTP, messageQueue, tripService),
 	}
 
+	log.Println("app successfully created")
 	return a, nil
 }
 
 func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error) {
-
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Mongo.Uri))
 	if err != nil {
 		return nil, fmt.Errorf("new mongo client create error: %w", err)
@@ -106,7 +107,6 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 	}
 
 	database := client.Database(config.Mongo.Database)
-
 	lg := zapctx.Logger(ctx)
 
 	// uncomment if migration is needed
@@ -115,6 +115,7 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 	if err != nil {
 		return nil, fmt.Errorf("run migrations failed")
 	}
+	log.Println("mongo db migrations finished")
 
 	return database, nil
 }

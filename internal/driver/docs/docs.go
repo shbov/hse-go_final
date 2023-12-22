@@ -23,71 +23,7 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {
-        "/": {
-            "get": {
-                "description": "Поиск водителей по заданным координатам и радиусу",
-                "consumes": [
-                    "application/json"
-                ],
-                "summary": "GetDriversByLocation",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/{driver_id}/location": {
-            "post": {
-                "description": "Обновление данных о позиции водителя",
-                "consumes": [
-                    "application/json"
-                ],
-                "summary": "SetDriverLocation",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "ID of driver",
-                        "name": "driver_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Latitude and longitude  in decimal degrees",
-                        "name": "lat",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/requests.SetDriverLocationBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "requests.SetDriverLocationBody": {
-            "type": "object",
-            "properties": {
-                "lat": {
-                    "type": "number"
-                },
-                "lng": {
-                    "type": "number"
-                }
-            }
-        }
-    }
+    "paths": {}
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

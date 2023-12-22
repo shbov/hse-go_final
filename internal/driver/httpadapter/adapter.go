@@ -6,11 +6,10 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/docs"
 	"github.com/shbov/hse-go_final/internal/driver/model"
 	"github.com/shbov/hse-go_final/internal/driver/service"
+	"github.com/shbov/hse-go_final/pkg/httpHelpers"
+	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
 	"github.com/toshi0607/chi-prometheus"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/propagation"
-	"google.golang.org/grpc"
+
 	"log"
 
 	"github.com/juju/zaputil/zapctx"
@@ -19,15 +18,14 @@ import (
 	"github.com/riandyrn/otelchi"
 	"go.opentelemetry.io/otel"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+
 	"moul.io/chizap"
 )
+
+var _ Adapter = (*adapter)(nil)
 
 var (
 	ServiceName = "driver-service"
@@ -41,9 +39,9 @@ type adapter struct {
 	server       *http.Server
 }
 
-// @title Location service
+// @title Driver service
 // @version 1.0
-// @description This is a location service
+// @description This is a driver service
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -57,17 +55,10 @@ type adapter struct {
 // @BasePath /api/v1
 // @query.collection.format multi
 
-// Example godoc
-// @Summary GetDriversByLocation
-// @Description Поиск водителей по заданным координатам и радиусу
-// @Accept       json
-// @Success 200
-// @Router / [get]
-func (a *adapter) Example(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
-}
-
 func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "GetTrips")
+	defer span.End()
+
 	userId := r.Header.Get("user_id")
 
 	trips, err := a.tripRepo.GetTripsByUserId(r.Context(), userId)
@@ -75,10 +66,14 @@ func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 		return
 	}
-	writeJSONResponse(w, http.StatusOK, trips)
+
+	httpHelpers.WriteJSONResponse(w, http.StatusOK, trips)
 }
 
 func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "GetTripByTripId")
+	defer span.End()
+
 	data, err := a.validate(r)
 	if err != nil {
 		writeError(w, err)
@@ -90,10 +85,13 @@ func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSONResponse(w, http.StatusOK, *data.Trip)
+	httpHelpers.WriteJSONResponse(w, http.StatusOK, *data.Trip)
 }
 
 func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "AcceptTrip")
+	defer span.End()
+
 	data, err := a.validate(r)
 	if err != nil {
 		writeError(w, err)
@@ -106,12 +104,14 @@ func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeResponse(w, http.StatusOK, "Success operation")
+	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
 func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
-	reason := r.URL.Query().Get("reason")
+	_, span := tracer.Start(r.Context(), "CancelTrip")
+	defer span.End()
 
+	reason := r.URL.Query().Get("reason")
 	data, err := a.validate(r)
 	if err != nil {
 		writeError(w, err)
@@ -124,10 +124,13 @@ func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeResponse(w, http.StatusOK, "Success operation")
+	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
 func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "StartTrip")
+	defer span.End()
+
 	data, err := a.validate(r)
 	if err != nil {
 		writeError(w, err)
@@ -140,10 +143,13 @@ func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeResponse(w, http.StatusOK, "Success operation")
+	httpHelpers.WriteResponse(w, http.StatusOK, "Success operation")
 }
 
 func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
+	_, span := tracer.Start(r.Context(), "EndTrip")
+	defer span.End()
+
 	data, err := a.validate(r)
 	if err != nil {
 		writeError(w, err)
@@ -156,13 +162,13 @@ func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeResponse(w, http.StatusOK, "Success operation")
+	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
 func (a *adapter) Serve(ctx context.Context) error {
 	lg := zapctx.Logger(ctx)
 
-	shut := initTracerProvider(a.config.OtlpAddress)
+	shut := tracer2.InitTracerProvider(ctx, a.config.OtlpAddress, ServiceName)
 	defer shut()
 
 	r := chi.NewRouter()
@@ -178,8 +184,6 @@ func (a *adapter) Serve(ctx context.Context) error {
 		WithReferer:   true,
 		WithUserAgent: true,
 	}))
-
-	apiRouter.Post("/", a.Example)
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json
@@ -201,7 +205,11 @@ func (a *adapter) Serve(ctx context.Context) error {
 }
 
 func (a *adapter) Shutdown(ctx context.Context) {
-	_ = a.server.Shutdown(ctx)
+	lg := zapctx.Logger(ctx)
+	err := a.server.Shutdown(ctx)
+	if err != nil {
+		lg.Fatal(err.Error())
+	}
 }
 
 func New(
@@ -225,54 +233,6 @@ func New(
 	}
 }
 
-func initTracerProvider(otlpAddress string) func() {
-	ctx := context.Background()
-	res, err := resource.New(ctx,
-		resource.WithFromEnv(),
-		resource.WithProcess(),
-		resource.WithTelemetrySDK(),
-		resource.WithHost(),
-		resource.WithAttributes(
-			semconv.ServiceNameKey.String(ServiceName),
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("otlp address is " + otlpAddress)
-	traceClient := otlptracegrpc.NewClient(
-		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint(otlpAddress),
-		otlptracegrpc.WithDialOption(grpc.WithBlock()))
-	sctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-
-	traceExp, err := otlptrace.New(sctx, traceClient)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bsp := sdktrace.NewBatchSpanProcessor(traceExp)
-	tracerProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithResource(res),
-		sdktrace.WithSpanProcessor(bsp),
-	)
-
-	// set global propagator to tracecontext (the default is no-op).
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	otel.SetTracerProvider(tracerProvider)
-
-	return func() {
-		cxt, cancel := context.WithTimeout(ctx, time.Second)
-		defer cancel()
-		if err := traceExp.Shutdown(cxt); err != nil {
-			otel.Handle(err)
-		}
-	}
-}
-
 type requestData struct {
 	UserId string
 	TripId string
@@ -282,7 +242,7 @@ type requestData struct {
 func (a *adapter) validate(r *http.Request) (*requestData, error) {
 	userId := r.Header.Get("user_id")
 	tripId := chi.URLParam(r, "trip_id")
-	if !IsValidUUID(tripId) {
+	if !httpHelpers.IsValidUUID(tripId) {
 		return nil, fmt.Errorf("invalid uuid")
 	}
 
@@ -290,5 +250,6 @@ func (a *adapter) validate(r *http.Request) (*requestData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("trip not found")
 	}
+
 	return &requestData{UserId: userId, TripId: tripId, Trip: trip}, nil
 }
