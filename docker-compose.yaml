@@ -11,7 +11,7 @@ services:
     build:
       context: "."
       dockerfile: ".docker/location/app.Dockerfile"
-    restart: unless-stopped
+#    restart: unless-stopped
     depends_on:
       location-build:
         condition: service_completed_successfully
@@ -33,7 +33,7 @@ services:
     build:
       context: "."
       dockerfile: ".docker/driver/app.Dockerfile"
-    restart: unless-stopped
+#    restart: unless-stopped
     depends_on:
       location-build:
         condition: service_completed_successfully

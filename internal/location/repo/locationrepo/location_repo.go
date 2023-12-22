@@ -9,7 +9,6 @@ import (
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/location/model"
 	"github.com/shbov/hse-go_final/internal/location/repo"
-	"github.com/shbov/hse-go_final/internal/location/service"
 )
 
 var _ repo.Location = (*locationRepo)(nil)
@@ -64,18 +63,11 @@ func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float
 }
 
 func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId string, lat float32, lng float32) error {
-	row := r.conn(ctx).QueryRow(ctx,
-		`SELECT id FROM locations WHERE driver_id = $1`,
-		driverId)
-	var id int
-	if err := row.Scan(&id); err != nil {
-		return service.ErrDriverNotFound
-	}
+	_, err := r.conn(ctx).Exec(ctx,
+		`INSERT INTO locations (driver_id, lat, lng) VALUES ($1, $2, $3) 
+			ON CONFLICT (driver_id) DO UPDATE SET lat = $2, lng = $3`,
+		driverId, lat, lng)
 
-	_, err := r.conn(ctx).Exec(
-		ctx,
-		`UPDATE locations SET lat = $1, lng = $2 WHERE driver_id = $3`,
-		lat, lng, driverId)
 	if err != nil {
 		return err
 	}
