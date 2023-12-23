@@ -28,13 +28,15 @@ func (r *tripRepo) AddTrip(ctx context.Context, trip trip.Trip) error {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()
 
+	lg := zapctx.Logger(ctx)
+
 	coll := r.db.Collection(tripCollection)
 
 	_, err := coll.InsertOne(ctx, trip)
 	if err != nil {
 		return err
 	}
-
+	lg.Info("successfully inserted document")
 	return nil
 }
 

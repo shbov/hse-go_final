@@ -25,15 +25,14 @@ func writeToKafka(ctx context.Context, writer *kafka.Writer, event any) error {
 }
 
 func main() {
-	flag.Parse()
 
 	ctx := context.Background()
 
 	logger := log.Default()
 
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:     []string{"kafka:9092"},
-		Topic:       "trip",
+		Brokers:     []string{"localhost:29092"},
+		Topic:       "driver",
 		Async:       *async,
 		Logger:      kafka.LoggerFunc(logger.Printf),
 		ErrorLogger: kafka.LoggerFunc(logger.Printf),
