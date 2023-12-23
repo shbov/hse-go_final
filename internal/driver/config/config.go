@@ -54,6 +54,12 @@ type Config struct {
 
 	Mongo MongoConfig `yaml:"mongo"`
 	Kafka KafkaConfig `yaml:"kafka"`
+
+	Location LocationService `yaml:"location"`
+}
+
+type LocationService struct {
+	URL string `yaml:"url"`
 }
 
 func ParseConfigFromEnv() (*Config, error) {
@@ -83,6 +89,10 @@ func ParseConfigFromEnv() (*Config, error) {
 			GroupID:  config.GetEnv(os.Getenv("DRIVER_KAFKA_GROUP_ID"), DefaultKafkaGroupID),
 			Topic:    config.GetEnv(os.Getenv("DRIVER_KAFKA_TOPIC"), DefaultKafkaTopic),
 			MaxBytes: config.GetEnv(os.Getenv("DRIVER_KAFKA_MAX_BYTES"), DefaultKafkaMaxBytes),
+		},
+
+		Location: LocationService{
+			URL: config.GetEnv(os.Getenv("LOCATION_URL"), "http://localhost:8080"),
 		},
 	}, nil
 }
