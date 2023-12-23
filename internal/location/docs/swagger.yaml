@@ -45,6 +45,8 @@ paths:
       responses:
         "200":
           description: OK
+        "404":
+          description: Not Found
       summary: GetDriversByLocation
   /{driver_id}/location:
     post:

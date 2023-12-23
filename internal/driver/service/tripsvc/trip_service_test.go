@@ -3,6 +3,7 @@ package tripsvc_test
 import (
 	"context"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
 	"github.com/shbov/hse-go_final/internal/driver/repo/repomock"
 	"testing"
 
@@ -14,7 +15,7 @@ func TestAddTrip(t *testing.T) {
 	mockRepo := new(repomock.TripMock)
 	tripService := tripsvc.New(context.Background(), mockRepo)
 
-	trip := trip.Trip{
+	trip1 := trip.Trip{
 		Id:       "trip1",
 		DriverId: "driver1",
 		From: trip.Coordinates{
@@ -29,14 +30,14 @@ func TestAddTrip(t *testing.T) {
 			Amount:   100,
 			Currency: "RUB",
 		},
-		Status: "status1",
+		Status: trip_status.DRIVERFOUND,
 	}
 
 	// Mock the repository method
-	mockRepo.On("AddTrip", context.Background(), trip).Return(nil)
+	mockRepo.On("AddTrip", context.Background(), trip1).Return(nil)
 
 	// Test
-	err := tripService.AddTrip(context.Background(), trip)
+	err := tripService.AddTrip(context.Background(), trip1)
 
 	// Assertions
 	assert.NoError(t, err, "Expected no error")
@@ -67,6 +68,7 @@ func TestGetTripsByUserId(t *testing.T) {
 				Amount:   100,
 				Currency: "RUB",
 			},
+			Status: trip_status.DRIVERFOUND,
 		},
 		{
 			Id:       "trip2",
@@ -83,6 +85,7 @@ func TestGetTripsByUserId(t *testing.T) {
 				Amount:   200,
 				Currency: "RUB",
 			},
+			Status: trip_status.DRIVERFOUND,
 		},
 	}
 
@@ -122,6 +125,7 @@ func TestGetTripByUserIdTripId(t *testing.T) {
 			Amount:   100,
 			Currency: "RUB",
 		},
+		Status: trip_status.DRIVERFOUND,
 	}
 
 	mockRepo.On("GetTripByUserIdTripId", context.Background(), userID, tripID).Return(trip, nil)

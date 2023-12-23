@@ -69,7 +69,7 @@ func (r *tripRepo) GetTripByUserIdTripId(ctx context.Context, userId string, tri
 	coll := r.db.Collection(tripCollection)
 	filter := bson.D{{"driver_id", userId}, {"id", tripId}}
 
-	err := coll.FindOne(ctx, filter).Decode(trip)
+	err := coll.FindOne(ctx, filter).Decode(&trip)
 	if err != nil {
 		return nil, err
 	}

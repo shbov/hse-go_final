@@ -95,6 +95,7 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 // @Param        lng    query     float64  true  "Longitude in decimal degrees"
 // @Param        radius    query     float64  true  "Radius in meters"
 // @Success 200
+// @Failure 404
 // @Router / [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetDriversByLocation")
@@ -144,8 +145,8 @@ func (a *adapter) Serve(ctx context.Context) error {
 		WithUserAgent: true,
 	}))
 
-	apiRouter.Post("/{driver_id}/location", a.SetDriverLocation)
 	apiRouter.Get("/", a.GetDriversByLocation)
+	apiRouter.Post("/{driver_id}/location", a.SetDriverLocation)
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json

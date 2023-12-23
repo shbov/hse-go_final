@@ -54,6 +54,8 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
       summary: GetTripByTripId
   /trips/{trip_id}/accept:
     post:
@@ -78,6 +80,8 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
       summary: AcceptTrip
   /trips/{trip_id}/cancel:
     post:
@@ -100,13 +104,14 @@ paths:
       - description: Reason of cancel
         in: query
         name: reason
-        required: true
         type: string
       responses:
         "200":
           description: OK
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
       summary: CancelTrip
   /trips/{trip_id}/end:
     post:
@@ -131,6 +136,8 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
       summary: EndTrip
   /trips/{trip_id}/start:
     post:
@@ -155,5 +162,7 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
       summary: StartTrip
 swagger: "2.0"

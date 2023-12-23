@@ -1,5 +1,9 @@
 package trip
 
+import (
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
+)
+
 type Coordinates struct {
 	Lat float64 `json:"lat" bson:"lat"`
 	Lng float64 `json:"lng" bson:"lng"`
@@ -19,5 +23,5 @@ type Trip struct {
 
 	Price Price `json:"price" bson:"price"`
 
-	Status string `json:"status" bson:"status"`
+	Status trip_status.TripStatus `json:"status" bson:"status"`
 }
