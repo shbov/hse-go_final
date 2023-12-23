@@ -13,7 +13,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/message_queue/drivermq"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
-	"github.com/shbov/hse-go_final/internal/driver/service/kafkalistener"
+	"github.com/shbov/hse-go_final/internal/driver/service/kafkalistenersvc"
 	"github.com/shbov/hse-go_final/internal/driver/service/kafkasvc"
 	"github.com/shbov/hse-go_final/internal/driver/service/tripsvc"
 	"github.com/shbov/hse-go_final/pkg/mongo_migration"
@@ -93,7 +93,7 @@ func New(ctx context.Context, config *config.Config) (App, error) {
 		return nil, err
 	}
 
-	listener := kafkalistener.New(ctx, tripService, kafkaService)
+	listener := kafkalistenersvc.New(ctx, tripService, kafkaService)
 
 	a := &app{
 		config:       config,

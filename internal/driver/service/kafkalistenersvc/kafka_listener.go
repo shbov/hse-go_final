@@ -1,4 +1,4 @@
-package kafkalistener
+package kafkalistenersvc
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/model/events"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 )
 
@@ -59,16 +60,16 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 					lg.Fatal(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
 			} else {
-				var status string
+				var status trip_status.TripStatus
 				switch event.Type {
 				case "trip.event.accepted":
-					status = "DRIVER_FOUND"
+					status = trip_status.ACCEPTED
 				case "trip.event.cancelled":
-					status = "CANCELLED"
+					status = trip_status.CANCELED
 				case "trip.event.ended":
-					status = "ENDED"
+					status = trip_status.ENDED
 				case "trip.event.started":
-					status = "STARTED"
+					status = trip_status.STARTED
 				}
 				if err := kl.tripService.ChangeTripStatus(ctx, event.Data.TripId, status); err != nil {
 					lg.Fatal(fmt.Sprintf("failed to update trip status: %s\n", err))

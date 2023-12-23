@@ -3,6 +3,7 @@ package trip_status
 type TripStatus string
 
 const (
+	ACCEPTED     TripStatus = "ACCEPTED"
 	CANCELED     TripStatus = "CANCELED"
 	DRIVERFOUND  TripStatus = "DRIVER_FOUND"
 	DRIVERSEARCH TripStatus = "DRIVER_SEARCH"

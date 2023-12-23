@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 )
@@ -14,7 +15,7 @@ type tripService struct {
 	tripRepo repo.Trip
 }
 
-func (ts *tripService) ChangeTripStatus(ctx context.Context, tripId string, status string) error {
+func (ts *tripService) ChangeTripStatus(ctx context.Context, tripId string, status trip_status.TripStatus) error {
 	return ts.ChangeTripStatus(ctx, tripId, status)
 }
 

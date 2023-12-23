@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -37,7 +38,7 @@ func (r *tripRepo) AddTrip(ctx context.Context, trip trip.Trip) error {
 	return nil
 }
 
-func (r *tripRepo) ChangeTripStatus(ctx context.Context, tripId string, status string) error {
+func (r *tripRepo) ChangeTripStatus(ctx context.Context, tripId string, status trip_status.TripStatus) error {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()
 

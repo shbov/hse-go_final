@@ -1,6 +1,9 @@
 package events
 
-import "time"
+import (
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
+	"time"
+)
 
 type DefaultEvent struct {
 	Id              string    `json:"id"`
@@ -26,7 +29,7 @@ type CreatedTripEvent struct {
 			Amount   float64 `json:"amount"`
 			Currency string  `json:"currency"`
 		} `json:"price"`
-		Status string `json:"status"`
+		Status trip_status.TripStatus `json:"status"`
 		From   struct {
 			Lat float64 `json:"lat"`
 			Lng float64 `json:"lng"`
