@@ -62,13 +62,13 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 			} else {
 				var status trip_status.TripStatus
 				switch event.Type {
-				case "trip.event.accepted":
+				case event_type.ACCEPTED:
 					status = trip_status.ACCEPTED
-				case "trip.event.cancelled":
+				case event_type.CANCELED:
 					status = trip_status.CANCELED
-				case "trip.event.ended":
+				case event_type.ENDED:
 					status = trip_status.ENDED
-				case "trip.event.started":
+				case event_type.STARTED:
 					status = trip_status.STARTED
 				}
 
