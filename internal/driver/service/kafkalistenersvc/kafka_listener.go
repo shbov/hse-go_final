@@ -35,7 +35,7 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 			m, err := reader.ReadMessage(ctx)
 			if err != nil {
 				lg.Error(fmt.Sprintf("failed to read event: %s\n", err))
-				return
+				continue
 			}
 			lg.Info("read new message from kafka")
 

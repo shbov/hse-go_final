@@ -185,6 +185,7 @@ func New(conf *config.KafkaConfig, lg *zap.Logger) (message_queue.MessageQueue, 
 		rc: r,
 	}
 
+	lg.Debug(fmt.Sprintf("Brokers: %s\n", conf.Brokers))
 	lg.Info(fmt.Sprintf("message_queue successfully created; listening addresses: %s", conf.Brokers))
 	return d, nil
 }

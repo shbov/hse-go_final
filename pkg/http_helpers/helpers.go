@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"strconv"
 
 	"net/http"
 )
@@ -33,4 +34,13 @@ func WriteJSONResponse(w http.ResponseWriter, status int, payload interface{}) {
 func IsValidUUID(u string) bool {
 	_, err := uuid.Parse(u)
 	return err == nil
+}
+
+func ParseQueryToFloat(query string) (float64, error) {
+	floatValue, err := strconv.ParseFloat(query, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return floatValue, nil
 }

@@ -22,14 +22,17 @@ func (ds *driverService) CancelTrip(ctx context.Context, tripId string, reason s
 	err := ds.mq.CancelTrip(ctx, tripId, reason)
 	return err
 }
+
 func (ds *driverService) AcceptTrip(ctx context.Context, driverId string, tripId string) error {
 	err := ds.mq.AcceptTrip(ctx, driverId, tripId)
 	return err
 }
+
 func (ds *driverService) StartTrip(ctx context.Context, tripId string) error {
 	err := ds.mq.StartTrip(ctx, tripId)
 	return err
 }
+
 func (ds *driverService) EndTrip(ctx context.Context, tripId string) error {
 	err := ds.mq.EndTrip(ctx, tripId)
 	return err

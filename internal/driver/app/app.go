@@ -45,7 +45,7 @@ func (a *app) Serve(ctx context.Context) error {
 	signal.Notify(done, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
-		a.listener.Run(ctx)
+		a.listener.Run(ctx, a.config.Location.URL)
 	}()
 
 	go func() {

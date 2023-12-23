@@ -101,11 +101,30 @@ func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetDriversByLocation")
 	defer span.End()
 
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
+	lat, err := http_helpers.ParseQueryToFloat(r.URL.Query().Get("lat"))
+	if err != nil {
+		writeError(w, service.ErrRequestIsIncorrect)
+		return
+	}
 
-	var request requests.GetDriversByLocationReqBody
-	err := decoder.Decode(&request)
+	lng, err := http_helpers.ParseQueryToFloat(r.URL.Query().Get("lng"))
+	if err != nil {
+		writeError(w, service.ErrRequestIsIncorrect)
+		return
+	}
+
+	radius, err := http_helpers.ParseQueryToFloat(r.URL.Query().Get("radius"))
+	if err != nil {
+		writeError(w, service.ErrRequestIsIncorrect)
+		return
+	}
+
+	request := requests.GetDriversByLocationReqBody{
+		Lat:    lat,
+		Lng:    lng,
+		Radius: radius,
+	}
+
 	if err != nil {
 		writeError(w, service.ErrRequestIsIncorrect)
 		return

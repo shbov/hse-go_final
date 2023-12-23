@@ -26,7 +26,7 @@ const (
 	DefaultKafkaMaxBytes = "2000000"
 )
 
-var DefaultKafkaBrokers = []string{"localhost:29092"}
+var DefaultKafkaBrokers = []string{"kafka:29092"}
 
 type AppConfig struct {
 	AppName         string        `yaml:"app_name"`
