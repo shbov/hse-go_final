@@ -53,6 +53,14 @@ type adapter struct {
 // @BasePath /api/v1
 // @query.collection.format multi
 
+// GetTrips godoc
+// @Summary GetTrips
+// @Description Получение списка поездок пользователя
+// @Accept       json
+// @Param        user_id    header     string  true  "ID of user"  Format(uuid)
+// @Success 200
+// @Failure 400
+// @Router /trips [get]
 func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetTrips")
 	defer span.End()
@@ -68,6 +76,15 @@ func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
 	httpHelpers.WriteJSONResponse(w, http.StatusOK, trips)
 }
 
+// GetTripByTripId godoc
+// @Summary GetTripByTripId
+// @Description Получение поездки по ID
+// @Accept       json
+// @Param        user_id    header     string  true  "ID of user"  Format(uuid)
+// @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
+// @Success 200
+// @Failure 400
+// @Router /trips/{trip_id} [get]
 func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetTripByTripId")
 	defer span.End()
@@ -86,6 +103,15 @@ func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
 	httpHelpers.WriteJSONResponse(w, http.StatusOK, *data.Trip)
 }
 
+// AcceptTrip godoc
+// @Summary AcceptTrip
+// @Description Принятие поездки водителем
+// @Accept       json
+// @Param        user_id    header     string  true  "ID of user"  Format(uuid)
+// @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
+// @Success 200
+// @Failure 400
+// @Router /trips/{trip_id}/accept [post]
 func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "AcceptTrip")
 	defer span.End()
@@ -105,6 +131,16 @@ func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
+// CancelTrip godoc
+// @Summary CancelTrip
+// @Description Отмена поездки водителем
+// @Accept       json
+// @Param        user_id    header     string  true  "ID of user"  Format(uuid)
+// @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
+// @Param        reason    query     string  true  "Reason of cancel"
+// @Success 200
+// @Failure 400
+// @Router /trips/{trip_id}/cancel [post]
 func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "CancelTrip")
 	defer span.End()
@@ -125,6 +161,15 @@ func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
+// StartTrip godoc
+// @Summary StartTrip
+// @Description Начало поездки водителем
+// @Accept       json
+// @Param        user_id    header     string  true  "ID of user"  Format(uuid)
+// @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
+// @Success 200
+// @Failure 400
+// @Router /trips/{trip_id}/start [post]
 func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "StartTrip")
 	defer span.End()
@@ -144,6 +189,15 @@ func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 	httpHelpers.WriteResponse(w, http.StatusOK, "Success operation")
 }
 
+// EndTrip godoc
+// @Summary EndTrip
+// @Description Окончание поездки водителем
+// @Accept       json
+// @Param        user_id    header     string  true  "ID of user"  Format(uuid)
+// @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
+// @Success 200
+// @Failure 400
+// @Router /trips/{trip_id}/end [post]
 func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "EndTrip")
 	defer span.End()
@@ -182,6 +236,14 @@ func (a *adapter) Serve(ctx context.Context) error {
 		WithReferer:   true,
 		WithUserAgent: true,
 	}))
+
+	apiRouter.Get("/trips", a.GetTrips)
+	apiRouter.Get("/trips/{trip_id}", a.GetTripByTripId)
+
+	apiRouter.Post("/trips/{trip_id}/cancel", a.CancelTrip)
+	apiRouter.Post("/trips/{trip_id}/accept", a.AcceptTrip)
+	apiRouter.Post("/trips/{trip_id}/start", a.StartTrip)
+	apiRouter.Post("/trips/{trip_id}/end", a.EndTrip)
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json

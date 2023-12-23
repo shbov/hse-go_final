@@ -26,6 +26,22 @@ paths:
       consumes:
       - application/json
       description: Поиск водителей по заданным координатам и радиусу
+      parameters:
+      - description: Latitude in decimal degrees
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude in decimal degrees
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: Radius in meters
+        in: query
+        name: radius
+        required: true
+        type: number
       responses:
         "200":
           description: OK

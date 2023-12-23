@@ -25,6 +25,29 @@
                     "application/json"
                 ],
                 "summary": "GetDriversByLocation",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Latitude in decimal degrees",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Longitude in decimal degrees",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Radius in meters",
+                        "name": "radius",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"

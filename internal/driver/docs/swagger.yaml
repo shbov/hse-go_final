@@ -12,5 +12,148 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Driver service
   version: "1.0"
-paths: {}
+paths:
+  /trips:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка поездок пользователя
+      parameters:
+      - description: ID of user
+        format: uuid
+        in: header
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: GetTrips
+  /trips/{trip_id}:
+    get:
+      consumes:
+      - application/json
+      description: Получение поездки по ID
+      parameters:
+      - description: ID of user
+        format: uuid
+        in: header
+        name: user_id
+        required: true
+        type: string
+      - description: ID of trip
+        format: uuid
+        in: path
+        name: trip_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: GetTripByTripId
+  /trips/{trip_id}/accept:
+    post:
+      consumes:
+      - application/json
+      description: Принятие поездки водителем
+      parameters:
+      - description: ID of user
+        format: uuid
+        in: header
+        name: user_id
+        required: true
+        type: string
+      - description: ID of trip
+        format: uuid
+        in: path
+        name: trip_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: AcceptTrip
+  /trips/{trip_id}/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Отмена поездки водителем
+      parameters:
+      - description: ID of user
+        format: uuid
+        in: header
+        name: user_id
+        required: true
+        type: string
+      - description: ID of trip
+        format: uuid
+        in: path
+        name: trip_id
+        required: true
+        type: string
+      - description: Reason of cancel
+        in: query
+        name: reason
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: CancelTrip
+  /trips/{trip_id}/end:
+    post:
+      consumes:
+      - application/json
+      description: Окончание поездки водителем
+      parameters:
+      - description: ID of user
+        format: uuid
+        in: header
+        name: user_id
+        required: true
+        type: string
+      - description: ID of trip
+        format: uuid
+        in: path
+        name: trip_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: EndTrip
+  /trips/{trip_id}/start:
+    post:
+      consumes:
+      - application/json
+      description: Начало поездки водителем
+      parameters:
+      - description: ID of user
+        format: uuid
+        in: header
+        name: user_id
+        required: true
+        type: string
+      - description: ID of trip
+        format: uuid
+        in: path
+        name: trip_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: StartTrip
 swagger: "2.0"

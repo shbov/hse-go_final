@@ -31,6 +31,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "GetDriversByLocation",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Latitude in decimal degrees",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Longitude in decimal degrees",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Radius in meters",
+                        "name": "radius",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -100,8 +123,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a location service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	//LeftDelim:        "{{",
-	//RightDelim:       "}}",
 }
 
 func init() {

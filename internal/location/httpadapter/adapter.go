@@ -91,6 +91,9 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 // @Summary GetDriversByLocation
 // @Description Поиск водителей по заданным координатам и радиусу
 // @Accept       json
+// @Param        lat    query     float64  true  "Latitude in decimal degrees"
+// @Param        lng    query     float64  true  "Longitude in decimal degrees"
+// @Param        radius    query     float64  true  "Radius in meters"
 // @Success 200
 // @Router / [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
