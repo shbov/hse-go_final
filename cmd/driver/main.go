@@ -52,6 +52,6 @@ func main() {
 	}
 
 	if err := a.Serve(ctx); err != nil {
-		lg.Fatal(err.Error())
+		lg.Error(err.Error())
 	}
 }

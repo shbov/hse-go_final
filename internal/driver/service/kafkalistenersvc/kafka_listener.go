@@ -27,27 +27,27 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 		select {
 		case <-ctx.Done(): // will execute if cancel func is called.
 			if err := reader.Close(); err != nil {
-				lg.Fatal(fmt.Sprintf("failed to close reader: %s\n", err))
+				lg.Error(fmt.Sprintf("failed to close reader: %s\n", err))
 			}
 			return
 		default:
 			m, err := reader.ReadMessage(ctx)
 			if err != nil {
-				lg.Fatal(fmt.Sprintf("failed to read event: %s\n", err))
+				lg.Error(fmt.Sprintf("failed to read event: %s\n", err))
 				return
 			}
 			lg.Info("read new message from kafka")
 
 			var event events.DefaultEvent
 			if err := json.Unmarshal(m.Value, &event); err != nil {
-				lg.Fatal(fmt.Sprintf("failed to unmarshal event: %s\n", err))
+				lg.Error(fmt.Sprintf("failed to unmarshal event: %s\n", err))
 				return
 			}
 
 			if event.Type == event_type.CREATED {
 				var createEvent events.CreatedTripEvent
 				if err := json.Unmarshal(m.Value, &createEvent); err != nil {
-					lg.Fatal(fmt.Sprintf("failed to unmarshal event: %s\n", err))
+					lg.Error(fmt.Sprintf("failed to unmarshal event: %s\n", err))
 					return
 				}
 				tripToSave := trip.Trip{
@@ -59,7 +59,7 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 					Status:   createEvent.Data.Status,
 				}
 				if err := kl.tripService.AddTrip(ctx, tripToSave); err != nil {
-					lg.Fatal(fmt.Sprintf("failed to save trip: %s\n", err))
+					lg.Error(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
 			} else {
 				var status trip_status.TripStatus
@@ -75,7 +75,7 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 				}
 
 				if err := kl.tripService.ChangeTripStatus(ctx, event.Data.TripId, status); err != nil {
-					lg.Fatal(fmt.Sprintf("failed to update trip status: %s\n", err))
+					lg.Error(fmt.Sprintf("failed to update trip status: %s\n", err))
 				}
 			}
 		}

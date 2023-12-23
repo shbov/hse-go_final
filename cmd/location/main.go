@@ -29,7 +29,7 @@ func main() {
 
 	config, err := app.ParseConfigFromEnv()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf(err.Error())
 	}
 	var env string
 	if config.App.Debug {
@@ -40,16 +40,16 @@ func main() {
 
 	lg, err := logger.GetLogger(config.App.Debug, config.App.DSN, env, config.App.AppName)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf(err.Error())
 	}
 
 	ctx := zapctx.WithLogger(context.Background(), lg)
 	a, err := app.New(ctx, config)
 	if err != nil {
-		log.Fatal(err.Error())
+		lg.Error(err.Error())
 	}
 
 	if err := a.Serve(ctx); err != nil {
-		lg.Fatal(err.Error())
+		lg.Error(err.Error())
 	}
 }

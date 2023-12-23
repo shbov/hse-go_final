@@ -262,7 +262,7 @@ func (a *adapter) Serve(ctx context.Context) error {
 	go func() {
 		err := http.ListenAndServe(":9000", nil)
 		if err != nil {
-			lg.Fatal(err.Error())
+			lg.Error(err.Error())
 		}
 	}()
 
@@ -273,7 +273,7 @@ func (a *adapter) Shutdown(ctx context.Context) {
 	lg := zapctx.Logger(ctx)
 	err := a.server.Shutdown(ctx)
 	if err != nil {
-		lg.Fatal(err.Error())
+		lg.Error(err.Error())
 	}
 }
 

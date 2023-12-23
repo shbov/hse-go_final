@@ -51,7 +51,7 @@ func (a *app) Serve(ctx context.Context) error {
 	go func() {
 		lg.Info("server successfully started at " + a.config.HTTP.ServeAddress)
 		if err := a.httpAdapter.Serve(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			lg.Fatal(err.Error()))
+			lg.Error(err.Error())
 		}
 	}()
 

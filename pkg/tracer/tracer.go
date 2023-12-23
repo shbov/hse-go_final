@@ -27,7 +27,7 @@ func InitTracerProvider(ctx context.Context, otlpAddress string, serviceName str
 		),
 	)
 	if err != nil {
-		lg.Fatal(err.Error())
+		lg.Error(err.Error())
 	}
 
 	lg.Info("otlp address is " + otlpAddress)
@@ -40,7 +40,7 @@ func InitTracerProvider(ctx context.Context, otlpAddress string, serviceName str
 
 	traceExp, err := otlptrace.New(sctx, traceClient)
 	if err != nil {
-		lg.Fatal(err.Error())
+		lg.Error(err.Error())
 	}
 
 	bsp := sdktrace.NewBatchSpanProcessor(traceExp)
