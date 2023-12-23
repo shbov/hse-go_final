@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/juju/zaputil/zapctx"
+	"github.com/shbov/hse-go_final/internal/driver/model/event_type"
 	"github.com/shbov/hse-go_final/internal/driver/model/events"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
@@ -12,10 +13,6 @@ import (
 )
 
 var _ service.Listener = (*kafkaListener)(nil)
-
-const (
-	eventTypeCreated string = "trip.event.created"
-)
 
 type kafkaListener struct {
 	tripService  service.Trip
@@ -25,6 +22,7 @@ type kafkaListener struct {
 func (kl *kafkaListener) Run(ctx context.Context) {
 	lg := zapctx.Logger(ctx)
 	reader := kl.kafkaService.GetReader(ctx)
+
 	for {
 		select {
 		case <-ctx.Done(): // will execute if cancel func is called.
@@ -37,12 +35,14 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 			if err != nil {
 				break
 			}
+
 			var event events.DefaultEvent
 			if err := json.Unmarshal(m.Value, &event); err != nil {
 				lg.Fatal(fmt.Sprintf("failed to unmarshal event: %s\n", err))
 				return
 			}
-			if event.Type == eventTypeCreated {
+
+			if event.Type == event_type.CREATED {
 				var createEvent events.CreatedTripEvent
 				if err := json.Unmarshal(m.Value, &createEvent); err != nil {
 					lg.Fatal(fmt.Sprintf("failed to unmarshal event: %s\n", err))
@@ -71,6 +71,7 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 				case "trip.event.started":
 					status = trip_status.STARTED
 				}
+
 				if err := kl.tripService.ChangeTripStatus(ctx, event.Data.TripId, status); err != nil {
 					lg.Fatal(fmt.Sprintf("failed to update trip status: %s\n", err))
 				}
@@ -87,6 +88,5 @@ func New(ctx context.Context, ts service.Trip, ks service.KafkaService) service.
 	}
 
 	lg.Info("kafka listener successfully created")
-
 	return kl
 }

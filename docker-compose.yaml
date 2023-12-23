@@ -37,7 +37,7 @@ services:
     depends_on:
       location-build:
         condition: service_completed_successfully
-      postgresql:
+      mongodb:
         condition: service_healthy
     volumes:
       - './.env:/driver/.env'
