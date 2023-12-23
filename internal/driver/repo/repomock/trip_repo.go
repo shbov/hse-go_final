@@ -14,6 +14,11 @@ type TripMock struct {
 	mock.Mock
 }
 
+func (r *TripMock) UpdateDriverIdByTripId(ctx context.Context, tripId string, userId string) error {
+	args := r.Called(ctx, tripId, userId)
+	return args.Error(0)
+}
+
 func (r *TripMock) ChangeTripStatus(ctx context.Context, tripId string, status trip_status.TripStatus) error {
 	args := r.Called(ctx, tripId, status)
 	return args.Error(0)

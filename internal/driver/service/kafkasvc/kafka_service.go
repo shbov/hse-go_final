@@ -8,32 +8,32 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/service"
 )
 
-var _ service.KafkaService = (*driverService)(nil)
+var _ service.KafkaService = (*kafkaService)(nil)
 
-type driverService struct {
+type kafkaService struct {
 	mq message_queue.MessageQueue
 }
 
-func (ds *driverService) GetReader(ctx context.Context) *kafka.Reader {
+func (ds *kafkaService) GetReader(ctx context.Context) *kafka.Reader {
 	return ds.mq.GetReader(ctx)
 }
 
-func (ds *driverService) CancelTrip(ctx context.Context, tripId string, reason string) error {
+func (ds *kafkaService) CancelTrip(ctx context.Context, tripId string, reason string) error {
 	err := ds.mq.CancelTrip(ctx, tripId, reason)
 	return err
 }
 
-func (ds *driverService) AcceptTrip(ctx context.Context, driverId string, tripId string) error {
+func (ds *kafkaService) AcceptTrip(ctx context.Context, driverId string, tripId string) error {
 	err := ds.mq.AcceptTrip(ctx, driverId, tripId)
 	return err
 }
 
-func (ds *driverService) StartTrip(ctx context.Context, tripId string) error {
+func (ds *kafkaService) StartTrip(ctx context.Context, tripId string) error {
 	err := ds.mq.StartTrip(ctx, tripId)
 	return err
 }
 
-func (ds *driverService) EndTrip(ctx context.Context, tripId string) error {
+func (ds *kafkaService) EndTrip(ctx context.Context, tripId string) error {
 	err := ds.mq.EndTrip(ctx, tripId)
 	return err
 }
@@ -41,7 +41,7 @@ func (ds *driverService) EndTrip(ctx context.Context, tripId string) error {
 func New(ctx context.Context, mq message_queue.MessageQueue) service.KafkaService {
 	lg := zapctx.Logger(ctx)
 
-	s := &driverService{
+	s := &kafkaService{
 		mq: mq,
 	}
 
