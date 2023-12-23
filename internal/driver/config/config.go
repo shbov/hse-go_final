@@ -26,7 +26,7 @@ const (
 	DefaultKafkaMaxBytes = "2000000"
 )
 
-var DefaultKafkaBrokers = []string{"localhost:9092"}
+var DefaultKafkaBrokers = []string{"localhost:29092"}
 
 type AppConfig struct {
 	AppName         string        `yaml:"app_name"`
@@ -51,9 +51,6 @@ type KafkaConfig struct {
 type Config struct {
 	App  AppConfig          `yaml:"app"`
 	HTTP httpadapter.Config `yaml:"http"`
-
-	Environment string `yaml:"environment"`
-	ServiceName string `yaml:"service_name"`
 
 	Mongo MongoConfig `yaml:"mongo"`
 	Kafka KafkaConfig `yaml:"kafka"`

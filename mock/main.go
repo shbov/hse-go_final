@@ -25,9 +25,7 @@ func writeToKafka(ctx context.Context, writer *kafka.Writer, event any) error {
 }
 
 func main() {
-
 	ctx := context.Background()
-
 	logger := log.Default()
 
 	writer := kafka.NewWriter(kafka.WriterConfig{

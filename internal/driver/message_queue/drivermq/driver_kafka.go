@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	source          string = "/driver"
-	dataContentType        = "application/json"
-	typePrefix             = "trip.command."
+	source          = "/driver"
+	dataContentType = "application/json"
+	typePrefix      = "trip.command."
 )
 
 var _ message_queue.MessageQueue = (*driverKafka)(nil)
