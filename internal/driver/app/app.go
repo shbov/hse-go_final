@@ -11,7 +11,6 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/config"
 	"github.com/shbov/hse-go_final/internal/driver/httpadapter"
 	"github.com/shbov/hse-go_final/internal/driver/message_queue/drivermq"
-	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"github.com/shbov/hse-go_final/internal/driver/service/kafkalistener"
@@ -123,9 +122,6 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 	lg := zapctx.Logger(ctx)
 
 	// uncomment if migration is needed
-	// В идеале вынести наполнение базы и миграции в отделный сервис,
-	// но слишком усложнять пет-проект не хочется, поэтому оставим пока так
-
 	migrationSvc := mongo_migration.NewMigrationsService(lg, database)
 	err = migrationSvc.RunMigrations(config.Mongo.MigrationsDir)
 	if err != nil {
@@ -135,14 +131,17 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 	lg.Info("mongo db migrations finished")
 
 	// uncomment if db population is needed
-	result, err := database.Collection("trip").InsertMany(ctx, trip.FakeTrips)
-	if err != nil {
-		return nil, err
-	}
+	// В идеале вынести наполнение базы и миграции в отделный сервис,
+	// но слишком усложнять пет-проект не хочется, поэтому оставим пока так
 
-	for _, id := range result.InsertedIDs {
-		fmt.Printf("Inserted document with _id: %v\n", id)
-	}
+	//result, err := database.Collection("trip").InsertMany(ctx, trip.FakeTrips)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//for _, id := range result.InsertedIDs {
+	//	fmt.Printf("Inserted document with _id: %v\n", id)
+	//}
 
 	return database, nil
 }

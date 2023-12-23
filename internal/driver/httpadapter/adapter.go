@@ -84,6 +84,7 @@ func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
 // @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
 // @Success 200
 // @Failure 400
+// @Failure 404
 // @Router /trips/{trip_id} [get]
 func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetTripByTripId")
@@ -111,6 +112,7 @@ func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
 // @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
 // @Success 200
 // @Failure 400
+// @Failure 404
 // @Router /trips/{trip_id}/accept [post]
 func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "AcceptTrip")
@@ -137,9 +139,10 @@ func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Param        user_id    header     string  true  "ID of user"  Format(uuid)
 // @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
-// @Param        reason    query     string  true  "Reason of cancel"
+// @Param        reason    query     string  false  "Reason of cancel"
 // @Success 200
 // @Failure 400
+// @Failure 404
 // @Router /trips/{trip_id}/cancel [post]
 func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "CancelTrip")
@@ -169,6 +172,7 @@ func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 // @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
 // @Success 200
 // @Failure 400
+// @Failure 404
 // @Router /trips/{trip_id}/start [post]
 func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "StartTrip")
@@ -197,6 +201,7 @@ func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 // @Param        trip_id    path     string  true  "ID of trip"  Format(uuid)
 // @Success 200
 // @Failure 400
+// @Failure 404
 // @Router /trips/{trip_id}/end [post]
 func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "EndTrip")
