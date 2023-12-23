@@ -14,6 +14,10 @@ type tripService struct {
 	tripRepo repo.Trip
 }
 
+func (ts *tripService) ChangeTripStatus(ctx context.Context, tripId string, status string) error {
+	return ts.ChangeTripStatus(ctx, tripId, status)
+}
+
 func (ts *tripService) AddTrip(ctx context.Context, trip trip.Trip) error {
 	return ts.AddTrip(ctx, trip)
 }
@@ -23,8 +27,8 @@ func (ts *tripService) GetTripsByUserId(ctx context.Context, userId string) ([]t
 	return result, err
 }
 func (ts *tripService) GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*trip.Trip, error) {
-	trip, err := ts.tripRepo.GetTripByUserIdTripId(ctx, userId, tripId)
-	return trip, err
+	t, err := ts.tripRepo.GetTripByUserIdTripId(ctx, userId, tripId)
+	return t, err
 }
 
 func New(ctx context.Context, tripRepo repo.Trip) service.Trip {

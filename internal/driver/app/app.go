@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/juju/zaputil/zapctx"
 	"github.com/opentracing/opentracing-go"
 	"github.com/shbov/hse-go_final/internal/driver/config"
@@ -12,6 +14,8 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/repo/triprepo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
+	"github.com/shbov/hse-go_final/internal/driver/service/kafkalistener"
+	"github.com/shbov/hse-go_final/internal/driver/service/kafkasvc"
 	"github.com/shbov/hse-go_final/internal/driver/service/tripsvc"
 	"github.com/shbov/hse-go_final/pkg/mongo_migration"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,9 +25,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 var _ App = (*app)(nil)
@@ -34,6 +35,7 @@ type app struct {
 	tracer       opentracing.Tracer
 	messageQueue service.KafkaService
 	tripService  service.Trip
+	listener     service.Listener
 	httpAdapter  httpadapter.Adapter
 }
 
@@ -42,6 +44,10 @@ func (a *app) Serve(ctx context.Context) error {
 	done := make(chan os.Signal, 1)
 
 	signal.Notify(done, syscall.SIGTERM, syscall.SIGINT)
+
+	go func() {
+		a.listener.Run(ctx)
+	}()
 
 	go func() {
 		lg.Info("server successfully started at " + a.config.HTTP.ServeAddress)
@@ -78,16 +84,24 @@ func New(ctx context.Context, config *config.Config) (App, error) {
 	}
 
 	tripService := tripsvc.New(ctx, tripRepo)
-	messageQueue, err := drivermq.New(&config.Kafka, lg)
+
+	mq, err := drivermq.New(&config.Kafka, lg)
+	if err != nil {
+		return nil, err
+	}
+	kafkaService := kafkasvc.New(ctx, mq)
 	if err != nil {
 		return nil, err
 	}
 
+	listener := kafkalistener.New(ctx, tripService, kafkaService)
+
 	a := &app{
 		config:       config,
 		tripService:  tripService,
-		messageQueue: messageQueue,
-		httpAdapter:  httpadapter.New(ctx, &config.HTTP, messageQueue, tripService),
+		messageQueue: kafkaService,
+		listener:     listener,
+		httpAdapter:  httpadapter.New(ctx, &config.HTTP, kafkaService, tripService),
 	}
 
 	lg.Info("app successfully created")

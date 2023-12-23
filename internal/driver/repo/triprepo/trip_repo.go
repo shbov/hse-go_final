@@ -37,6 +37,23 @@ func (r *tripRepo) AddTrip(ctx context.Context, trip trip.Trip) error {
 	return nil
 }
 
+func (r *tripRepo) ChangeTripStatus(ctx context.Context, tripId string, status string) error {
+	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
+	defer cancel()
+
+	filter := bson.D{{"id", tripId}}
+	update := bson.D{{"$set", bson.D{{"status", status}}}}
+
+	coll := r.db.Collection(tripCollection)
+
+	_, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *tripRepo) GetTripsByUserId(ctx context.Context, userId string) ([]trip.Trip, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/juju/zaputil/zapctx"
 	"github.com/segmentio/kafka-go"
 	"github.com/shbov/hse-go_final/internal/driver/config"
 	"github.com/shbov/hse-go_final/internal/driver/message_queue"
@@ -34,6 +35,10 @@ func (wrap logWrap) logf(msg string, a ...interface{}) {
 	wrap.l.Info(fmt.Sprintf(msg, a))
 }
 
+func (d *driverKafka) GetReader(ctx context.Context) *kafka.Reader {
+	return kafka.NewReader(d.rc)
+}
+
 func (d *driverKafka) CancelTrip(ctx context.Context, tripId string, reason string) error {
 	writer := kafka.NewWriter(d.wc)
 	id := uuid.New().String()
@@ -59,8 +64,14 @@ func (d *driverKafka) CancelTrip(ctx context.Context, tripId string, reason stri
 		return err
 	}
 
+	lg := zapctx.Logger(ctx)
+	if err := writer.Close(); err != nil {
+		lg.Error(fmt.Sprintf("failed to close writer: %s\n", err))
+	}
+
 	return nil
 }
+
 func (d *driverKafka) AcceptTrip(ctx context.Context, driverId string, tripId string) error {
 	writer := kafka.NewWriter(d.wc)
 	id := uuid.New().String()
@@ -84,6 +95,11 @@ func (d *driverKafka) AcceptTrip(ctx context.Context, driverId string, tripId st
 	err = writer.WriteMessages(ctx, kafka.Message{Value: parsedMsg})
 	if err != nil {
 		return err
+	}
+
+	lg := zapctx.Logger(ctx)
+	if err := writer.Close(); err != nil {
+		lg.Error(fmt.Sprintf("failed to close writer: %s\n", err))
 	}
 
 	return nil
@@ -112,6 +128,11 @@ func (d *driverKafka) StartTrip(ctx context.Context, tripId string) error {
 		return err
 	}
 
+	lg := zapctx.Logger(ctx)
+	if err := writer.Close(); err != nil {
+		lg.Error(fmt.Sprintf("failed to close writer: %s\n", err))
+	}
+
 	return nil
 }
 func (d *driverKafka) EndTrip(ctx context.Context, tripId string) error {
@@ -138,6 +159,10 @@ func (d *driverKafka) EndTrip(ctx context.Context, tripId string) error {
 		return err
 	}
 
+	lg := zapctx.Logger(ctx)
+	if err := writer.Close(); err != nil {
+		lg.Error(fmt.Sprintf("failed to close writer: %s\n", err))
+	}
 	return nil
 }
 
