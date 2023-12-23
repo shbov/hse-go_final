@@ -69,7 +69,7 @@ func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId strin
 	}
 
 	if newModel.RowsAffected() == 0 {
-		return repo.RecordNotFound
+		return r.AddLocation(ctx, driverId, lat, lng)
 	}
 
 	return nil
