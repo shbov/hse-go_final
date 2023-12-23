@@ -6,7 +6,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/docs"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/service"
-	"github.com/shbov/hse-go_final/pkg/httpHelpers"
+	"github.com/shbov/hse-go_final/pkg/http_helpers"
 	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
 	"github.com/toshi0607/chi-prometheus"
 
@@ -73,7 +73,7 @@ func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteJSONResponse(w, http.StatusOK, trips)
+	http_helpers.WriteJSONResponse(w, http.StatusOK, trips)
 }
 
 // GetTripByTripId godoc
@@ -101,7 +101,7 @@ func (a *adapter) GetTripByTripId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteJSONResponse(w, http.StatusOK, *data.Trip)
+	http_helpers.WriteJSONResponse(w, http.StatusOK, *data.Trip)
 }
 
 // AcceptTrip godoc
@@ -130,7 +130,7 @@ func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
+	http_helpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
 // CancelTrip godoc
@@ -161,7 +161,7 @@ func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
+	http_helpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
 // StartTrip godoc
@@ -190,7 +190,7 @@ func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteResponse(w, http.StatusOK, "Success operation")
+	http_helpers.WriteResponse(w, http.StatusOK, "Success operation")
 }
 
 // EndTrip godoc
@@ -219,7 +219,7 @@ func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteResponse(w, http.StatusOK, "Successful operation")
+	http_helpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
 func (a *adapter) Serve(ctx context.Context) error {
@@ -309,7 +309,7 @@ type requestData struct {
 func (a *adapter) validate(r *http.Request) (*requestData, error) {
 	userId := r.Header.Get("user_id")
 	tripId := chi.URLParam(r, "trip_id")
-	if !httpHelpers.IsValidUUID(tripId) {
+	if !http_helpers.IsValidUUID(tripId) {
 		return nil, fmt.Errorf("invalid uuid")
 	}
 

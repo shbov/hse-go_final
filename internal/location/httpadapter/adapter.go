@@ -9,7 +9,7 @@ import (
 	"github.com/shbov/hse-go_final/internal/location/docs"
 	"github.com/shbov/hse-go_final/internal/location/model/requests"
 	"github.com/shbov/hse-go_final/internal/location/service"
-	"github.com/shbov/hse-go_final/pkg/httpHelpers"
+	"github.com/shbov/hse-go_final/pkg/http_helpers"
 	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
 	"github.com/toshi0607/chi-prometheus"
 
@@ -84,7 +84,7 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteResponse(w, http.StatusOK, "Success operation")
+	http_helpers.WriteResponse(w, http.StatusOK, "Success operation")
 }
 
 // GetDriversByLocation godoc
@@ -122,7 +122,7 @@ func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpHelpers.WriteJSONResponse(w, http.StatusOK, result)
+	http_helpers.WriteJSONResponse(w, http.StatusOK, result)
 }
 
 func (a *adapter) Serve(ctx context.Context) error {
