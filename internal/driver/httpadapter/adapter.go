@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/driver/docs"
-	"github.com/shbov/hse-go_final/internal/driver/model"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"github.com/shbov/hse-go_final/pkg/httpHelpers"
 	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
@@ -298,7 +298,7 @@ func New(
 type requestData struct {
 	UserId string
 	TripId string
-	Trip   *model.Trip
+	Trip   *trip.Trip
 }
 
 func (a *adapter) validate(r *http.Request) (*requestData, error) {

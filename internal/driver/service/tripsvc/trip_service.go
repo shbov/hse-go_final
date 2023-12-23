@@ -3,7 +3,7 @@ package tripsvc
 import (
 	"context"
 	"github.com/juju/zaputil/zapctx"
-	"github.com/shbov/hse-go_final/internal/driver/model"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 )
@@ -14,15 +14,15 @@ type tripService struct {
 	tripRepo repo.Trip
 }
 
-func (ts *tripService) AddTrip(ctx context.Context, trip model.Trip) error {
+func (ts *tripService) AddTrip(ctx context.Context, trip trip.Trip) error {
 	return ts.AddTrip(ctx, trip)
 }
 
-func (ts *tripService) GetTripsByUserId(ctx context.Context, userId string) ([]model.Trip, error) {
+func (ts *tripService) GetTripsByUserId(ctx context.Context, userId string) ([]trip.Trip, error) {
 	result, err := ts.tripRepo.GetTripsByUserId(ctx, userId)
 	return result, err
 }
-func (ts *tripService) GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*model.Trip, error) {
+func (ts *tripService) GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*trip.Trip, error) {
 	trip, err := ts.tripRepo.GetTripByUserIdTripId(ctx, userId, tripId)
 	return trip, err
 }

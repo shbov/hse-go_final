@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/juju/zaputil/zapctx"
-	"github.com/shbov/hse-go_final/internal/driver/model"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/repo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,7 +23,7 @@ const (
 	tripCollection        = "trip"
 )
 
-func (r *tripRepo) AddTrip(ctx context.Context, trip model.Trip) error {
+func (r *tripRepo) AddTrip(ctx context.Context, trip trip.Trip) error {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()
 
@@ -37,11 +37,11 @@ func (r *tripRepo) AddTrip(ctx context.Context, trip model.Trip) error {
 	return nil
 }
 
-func (r *tripRepo) GetTripsByUserId(ctx context.Context, userId string) ([]model.Trip, error) {
+func (r *tripRepo) GetTripsByUserId(ctx context.Context, userId string) ([]trip.Trip, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()
 
-	var trips []model.Trip
+	var trips []trip.Trip
 
 	coll := r.db.Collection(tripCollection)
 	filter := bson.D{{"driver_id", userId}}
@@ -60,11 +60,11 @@ func (r *tripRepo) GetTripsByUserId(ctx context.Context, userId string) ([]model
 
 }
 
-func (r *tripRepo) GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*model.Trip, error) {
+func (r *tripRepo) GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*trip.Trip, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()
 
-	var trip model.Trip
+	var trip trip.Trip
 
 	coll := r.db.Collection(tripCollection)
 	filter := bson.D{{"driver_id", userId}, {"id", tripId}}

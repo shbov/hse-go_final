@@ -2,10 +2,10 @@ package tripsvc_test
 
 import (
 	"context"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/repo/repomock"
 	"testing"
 
-	"github.com/shbov/hse-go_final/internal/driver/model"
 	"github.com/shbov/hse-go_final/internal/driver/service/tripsvc"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,19 +13,19 @@ import (
 func TestAddTrip(t *testing.T) {
 	mockRepo := new(repomock.TripMock)
 	tripService := tripsvc.New(context.Background(), mockRepo)
-	
-	trip := model.Trip{
+
+	trip := trip.Trip{
 		Id:       "trip1",
 		DriverId: "driver1",
-		From: model.Coordinates{
+		From: trip.Coordinates{
 			Lat: 1.0,
 			Lng: 1.0,
 		},
-		To: model.Coordinates{
+		To: trip.Coordinates{
 			Lat: 2.0,
 			Lng: 2.0,
 		},
-		Price: model.Price{
+		Price: trip.Price{
 			Amount:   100,
 			Currency: "RUB",
 		},
@@ -51,19 +51,19 @@ func TestGetTripsByUserId(t *testing.T) {
 	userID := "user123"
 
 	// Mock the repository method
-	trips := []model.Trip{
+	trips := []trip.Trip{
 		{
 			Id:       "trip1",
 			DriverId: "driver1",
-			From: model.Coordinates{
+			From: trip.Coordinates{
 				Lat: 1.0,
 				Lng: 1.0,
 			},
-			To: model.Coordinates{
+			To: trip.Coordinates{
 				Lat: 2.0,
 				Lng: 2.0,
 			},
-			Price: model.Price{
+			Price: trip.Price{
 				Amount:   100,
 				Currency: "RUB",
 			},
@@ -71,15 +71,15 @@ func TestGetTripsByUserId(t *testing.T) {
 		{
 			Id:       "trip2",
 			DriverId: "driver2",
-			From: model.Coordinates{
+			From: trip.Coordinates{
 				Lat: 3.0,
 				Lng: 3.0,
 			},
-			To: model.Coordinates{
+			To: trip.Coordinates{
 				Lat: 4.0,
 				Lng: 4.0,
 			},
-			Price: model.Price{
+			Price: trip.Price{
 				Amount:   200,
 				Currency: "RUB",
 			},
@@ -107,18 +107,18 @@ func TestGetTripByUserIdTripId(t *testing.T) {
 	tripID := "trip1"
 
 	// Mock the repository method
-	trip := &model.Trip{
+	trip := &trip.Trip{
 		Id:       "trip1",
 		DriverId: "driver1",
-		From: model.Coordinates{
+		From: trip.Coordinates{
 			Lat: 1.0,
 			Lng: 1.0,
 		},
-		To: model.Coordinates{
+		To: trip.Coordinates{
 			Lat: 2.0,
 			Lng: 2.0,
 		},
-		Price: model.Price{
+		Price: trip.Price{
 			Amount:   100,
 			Currency: "RUB",
 		},

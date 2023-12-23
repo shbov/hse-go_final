@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"github.com/shbov/hse-go_final/internal/driver/model"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 )
 
 type Trip interface {
-	AddTrip(ctx context.Context, trip model.Trip) error
-	GetTripsByUserId(ctx context.Context, userId string) ([]model.Trip, error)
-	GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*model.Trip, error)
+	AddTrip(ctx context.Context, trip trip.Trip) error
+	GetTripsByUserId(ctx context.Context, userId string) ([]trip.Trip, error)
+	GetTripByUserIdTripId(ctx context.Context, userId string, tripId string) (*trip.Trip, error)
 }
