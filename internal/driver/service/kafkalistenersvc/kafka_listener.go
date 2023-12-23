@@ -50,6 +50,7 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 					lg.Error(fmt.Sprintf("failed to unmarshal event: %s\n", err))
 					return
 				}
+
 				tripToSave := trip.Trip{
 					Id:       createEvent.Data.TripId,
 					DriverId: "",
@@ -58,6 +59,7 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 					Price:    createEvent.Data.Price,
 					Status:   createEvent.Data.Status,
 				}
+
 				if err := kl.tripService.AddTrip(ctx, tripToSave); err != nil {
 					lg.Error(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
