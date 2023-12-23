@@ -52,6 +52,7 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 				}
 
 				if err := kl.tripService.AddTrip(ctx, *tripToSave); err != nil {
+
 					lg.Error(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
 

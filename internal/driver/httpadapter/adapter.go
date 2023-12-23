@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/shbov/hse-go_final/internal/driver/docs"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
+	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 	"github.com/shbov/hse-go_final/pkg/http_helpers"
 	tracer2 "github.com/shbov/hse-go_final/pkg/tracer"
@@ -32,8 +33,8 @@ var (
 
 type adapter struct {
 	config       *Config
-	messageQueue service.KafkaService
-	tripRepo     service.Trip
+	kafkaService service.KafkaService
+	tripService  service.Trip
 	server       *http.Server
 }
 
@@ -67,7 +68,7 @@ func (a *adapter) GetTrips(w http.ResponseWriter, r *http.Request) {
 
 	userId := r.Header.Get("user_id")
 
-	trips, err := a.tripRepo.GetTripsByUserId(r.Context(), userId)
+	trips, err := a.tripService.GetTripsByUserId(r.Context(), userId)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -118,13 +119,32 @@ func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "AcceptTrip")
 	defer span.End()
 
-	data, err := a.validate(r)
+	userID := r.Header.Get("user_id")
+	tripID := chi.URLParam(r, "trip_id")
+
+	if !http_helpers.IsValidUUID(tripID) {
+		writeError(w, fmt.Errorf("invalid uuid"))
+		return
+	}
+
+	// TODO: we need to link driver to a trip
+	// TODO: аналогично в других ручках; нам нужно поддерживать текущий статус трипа в монге актуальным,
+	//  т.е когда приходит запрос из кафки/http, то нужно еще и обновлять БД
+	err := a.tripService.UpdateDriverIdByTripId(r.Context(), tripID, userID)
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	err = a.messageQueue.AcceptTrip(r.Context(), data.UserId, data.TripId)
+	// mongodb <- status, driver_id
+	err = a.tripService.ChangeTripStatus(r.Context(), tripID, trip_status.ACCEPTED)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	// -> kafka
+	err = a.kafkaService.AcceptTrip(r.Context(), userID, tripID)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -155,7 +175,7 @@ func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.messageQueue.CancelTrip(r.Context(), data.TripId, reason)
+	err = a.kafkaService.CancelTrip(r.Context(), data.TripId, reason)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -184,7 +204,7 @@ func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.messageQueue.StartTrip(r.Context(), data.TripId)
+	err = a.kafkaService.StartTrip(r.Context(), data.TripId)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -213,7 +233,7 @@ func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.messageQueue.EndTrip(r.Context(), data.TripId)
+	err = a.kafkaService.EndTrip(r.Context(), data.TripId)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -295,8 +315,8 @@ func New(
 	lg.Info("adapter successfully created")
 	return &adapter{
 		config:       config,
-		messageQueue: messageQueue,
-		tripRepo:     tripRepo,
+		kafkaService: messageQueue,
+		tripService:  tripRepo,
 	}
 }
 
@@ -313,7 +333,7 @@ func (a *adapter) validate(r *http.Request) (*requestData, error) {
 		return nil, fmt.Errorf("invalid uuid")
 	}
 
-	trip, err := a.tripRepo.GetTripByUserIdTripId(r.Context(), userId, tripId)
+	trip, err := a.tripService.GetTripByUserIdTripId(r.Context(), userId, tripId)
 	if err != nil {
 		return nil, fmt.Errorf("trip not found")
 	}

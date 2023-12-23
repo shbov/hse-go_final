@@ -79,7 +79,7 @@ func main() {
 				Amount:   6912.185,
 				Currency: "KAFKA_CUR",
 			},
-			Status: "CREATED_FROM_KAFKA",
+			Status: "CREATED",
 			From: trip.Coordinates{
 				Lat: 83.58,
 				Lng: 138.12,
