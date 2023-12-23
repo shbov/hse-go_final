@@ -16,11 +16,11 @@ type tripService struct {
 }
 
 func (ts *tripService) ChangeTripStatus(ctx context.Context, tripId string, status trip_status.TripStatus) error {
-	return ts.ChangeTripStatus(ctx, tripId, status)
+	return ts.tripRepo.ChangeTripStatus(ctx, tripId, status)
 }
 
 func (ts *tripService) AddTrip(ctx context.Context, trip trip.Trip) error {
-	return ts.AddTrip(ctx, trip)
+	return ts.tripRepo.AddTrip(ctx, trip)
 }
 
 func (ts *tripService) GetTripsByUserId(ctx context.Context, userId string) ([]trip.Trip, error) {
