@@ -1,4 +1,4 @@
-package tripsvc_test
+package tripsvc
 
 import (
 	"context"
@@ -7,14 +7,11 @@ import (
 	"github.com/shbov/hse-go_final/internal/driver/repo/repomock"
 	"testing"
 
-	"github.com/shbov/hse-go_final/internal/driver/service/tripsvc"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddTrip(t *testing.T) {
 	mockRepo := new(repomock.TripMock)
-	tripService := tripsvc.New(context.Background(), mockRepo)
-
 	trip1 := trip.Trip{
 		Id:       "trip1",
 		DriverId: "driver1",
@@ -33,14 +30,12 @@ func TestAddTrip(t *testing.T) {
 		Status: trip_status.DRIVERFOUND,
 	}
 
-	// Mock the repository method
 	mockRepo.On("AddTrip", context.Background(), trip1).Return(nil)
+	tripService := New(context.Background(), mockRepo)
 
-	// Test
 	err := tripService.AddTrip(context.Background(), trip1)
-
-	// Assertions
 	assert.NoError(t, err, "Expected no error")
+
 	mockRepo.AssertExpectations(t)
 }
 
@@ -48,7 +43,7 @@ func TestGetTripsByUserId(t *testing.T) {
 	// Setup
 	mockRepo := new(repomock.TripMock)
 
-	tripService := tripsvc.New(context.Background(), mockRepo)
+	tripService := New(context.Background(), mockRepo)
 	userID := "user123"
 
 	// Mock the repository method
@@ -105,7 +100,7 @@ func TestGetTripByUserIdTripId(t *testing.T) {
 	// Setup
 	mockRepo := new(repomock.TripMock)
 
-	tripService := tripsvc.New(context.Background(), mockRepo)
+	tripService := New(context.Background(), mockRepo)
 	userID := "user123"
 	tripID := "trip1"
 
