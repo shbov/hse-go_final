@@ -7,7 +7,6 @@ import (
 	"github.com/juju/zaputil/zapctx"
 	"github.com/shbov/hse-go_final/internal/driver/model/event_type"
 	"github.com/shbov/hse-go_final/internal/driver/model/events"
-	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip_status"
 	"github.com/shbov/hse-go_final/internal/driver/service"
 )
@@ -19,7 +18,9 @@ type kafkaListener struct {
 	kafkaService service.KafkaService
 }
 
-func (kl *kafkaListener) Run(ctx context.Context) {
+const defaultSearchRadius float64 = 0.02
+
+func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 	lg := zapctx.Logger(ctx)
 	reader := kl.kafkaService.GetReader(ctx)
 
@@ -45,22 +46,27 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 			}
 
 			if event.Type == event_type.CREATED {
-				var createEvent events.CreatedTripEvent
-				if err := json.Unmarshal(m.Value, &createEvent); err != nil {
-					lg.Error(fmt.Sprintf("failed to unmarshal event: %s\n", err))
-					return
+				tripToSave, err := ParseEventCreate(m)
+				if err != nil {
+					lg.Error(fmt.Sprintf("failed to parse event: %s\n", err))
 				}
-				tripToSave := trip.Trip{
-					Id:       createEvent.Data.TripId,
-					DriverId: "",
-					From:     createEvent.Data.From,
-					To:       createEvent.Data.To,
-					Price:    createEvent.Data.Price,
-					Status:   createEvent.Data.Status,
-				}
-				if err := kl.tripService.AddTrip(ctx, tripToSave); err != nil {
+
+				if err := kl.tripService.AddTrip(ctx, *tripToSave); err != nil {
 					lg.Error(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
+
+				err = SendTripInvitationsToDrivers(
+					ctx,
+					tripToSave.From.Lat,
+					tripToSave.From.Lng,
+					defaultSearchRadius,
+					locationURL,
+					tripToSave.Id,
+				)
+				if err != nil {
+					lg.Error(fmt.Sprintf("failed to send trip invitations: %s\n", err))
+				}
+
 			} else {
 				var status trip_status.TripStatus
 				switch event.Type {
