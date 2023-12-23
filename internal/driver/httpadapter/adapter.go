@@ -181,6 +181,12 @@ func (a *adapter) CancelTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = a.tripService.ChangeTripStatus(r.Context(), data.TripId, trip_status.CANCELED)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	http_helpers.WriteResponse(w, http.StatusOK, "Successful operation")
 }
 
@@ -210,6 +216,12 @@ func (a *adapter) StartTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = a.tripService.ChangeTripStatus(r.Context(), data.TripId, trip_status.STARTED)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
 	http_helpers.WriteResponse(w, http.StatusOK, "Success operation")
 }
 
@@ -234,6 +246,12 @@ func (a *adapter) EndTrip(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = a.kafkaService.EndTrip(r.Context(), data.TripId)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	err = a.tripService.ChangeTripStatus(r.Context(), data.TripId, trip_status.ENDED)
 	if err != nil {
 		writeError(w, err)
 		return

@@ -7,6 +7,7 @@ import (
 )
 
 type Trip interface {
+	UpdateDriverIdByTripId(ctx context.Context, tripId string, userId string) error
 	ChangeTripStatus(ctx context.Context, tripId string, status trip_status.TripStatus) error
 	AddTrip(ctx context.Context, trip trip.Trip) error
 	GetTripsByUserId(ctx context.Context, userId string) ([]trip.Trip, error)

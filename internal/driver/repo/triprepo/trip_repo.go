@@ -24,6 +24,23 @@ const (
 	tripCollection        = "trip"
 )
 
+func (r *tripRepo) UpdateDriverIdByTripId(ctx context.Context, tripId string, userId string) error {
+	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
+	defer cancel()
+
+	filter := bson.D{{"id", tripId}}
+	update := bson.D{{"$set", bson.D{{"driver_id", userId}}}}
+
+	coll := r.db.Collection(tripCollection)
+
+	_, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *tripRepo) AddTrip(ctx context.Context, trip trip.Trip) error {
 	ctx, cancel := context.WithTimeout(ctx, timeoutQuery)
 	defer cancel()

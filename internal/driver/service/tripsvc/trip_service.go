@@ -15,6 +15,10 @@ type tripService struct {
 	tripRepo repo.Trip
 }
 
+func (ts *tripService) UpdateDriverIdByTripId(ctx context.Context, tripId string, userId string) error {
+	return ts.tripRepo.UpdateDriverIdByTripId(ctx, tripId, userId)
+}
+
 func (ts *tripService) ChangeTripStatus(ctx context.Context, tripId string, status trip_status.TripStatus) error {
 	return ts.tripRepo.ChangeTripStatus(ctx, tripId, status)
 }
