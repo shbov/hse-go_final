@@ -33,8 +33,10 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 		default:
 			m, err := reader.ReadMessage(ctx)
 			if err != nil {
-				break
+				lg.Fatal(fmt.Sprintf("failed to read event: %s\n", err))
+				return
 			}
+			lg.Info("read new message from kafka")
 
 			var event events.DefaultEvent
 			if err := json.Unmarshal(m.Value, &event); err != nil {
@@ -51,9 +53,9 @@ func (kl *kafkaListener) Run(ctx context.Context) {
 				tripToSave := trip.Trip{
 					Id:       createEvent.Data.TripId,
 					DriverId: "",
-					From:     trip.Coordinates(createEvent.Data.From),
-					To:       trip.Coordinates(createEvent.Data.To),
-					Price:    trip.Price(createEvent.Data.Price),
+					From:     createEvent.Data.From,
+					To:       createEvent.Data.To,
+					Price:    createEvent.Data.Price,
 					Status:   createEvent.Data.Status,
 				}
 				if err := kl.tripService.AddTrip(ctx, tripToSave); err != nil {

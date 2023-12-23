@@ -1,4 +1,4 @@
-package mock
+package main
 
 import (
 	"context"
@@ -95,6 +95,21 @@ func main() {
 	}
 
 	if err := writeToKafka(ctx, writer, tripToAddFromKafka2); err != nil {
+		log.Fatal("err write to kafka:", err)
+	}
+
+	changeStatus := events.DefaultEvent{
+		Id:              "e50611ac-af1f-4a47-a38d-ad9f6dfa547d",
+		Source:          "/trip",
+		Type:            "trip.event.started",
+		DataContentType: "application/json",
+		Time:            time.Time{},
+		Data: struct {
+			TripId string `json:"trip_id"`
+		}{TripId: "37b225c8-c0b5-4848-90ea-3a5860cff532"},
+	}
+
+	if err := writeToKafka(ctx, writer, changeStatus); err != nil {
 		log.Fatal("err write to kafka:", err)
 	}
 
