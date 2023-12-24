@@ -133,10 +133,6 @@ func initDB(ctx context.Context, config *config.Config) (*mongo.Database, error)
 		lg.Info("mongo db migrations finished")
 	}
 
-	// uncomment if db population is needed
-	// В идеале вынести наполнение базы и миграции в отделный сервис,
-	// но слишком усложнять пет-проект не хочется, поэтому оставим пока так
-
 	if config.Mongo.Populate {
 		result, err := database.Collection("trip").InsertMany(ctx, trip.FakeTrips)
 		if err != nil {
