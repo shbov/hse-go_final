@@ -37,6 +37,7 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 				lg.Error(fmt.Sprintf("failed to read event: %s\n", err))
 				continue
 			}
+
 			lg.Info("read new message from kafka")
 
 			var event events.DefaultEvent
@@ -52,7 +53,6 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 				}
 
 				if err := kl.tripService.AddTrip(ctx, *tripToSave); err != nil {
-
 					lg.Error(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
 
@@ -61,13 +61,12 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 					tripToSave.From.Lat,
 					tripToSave.From.Lng,
 					defaultSearchRadius,
-					locationURL,
+					fmt.Sprintf("%s/api/v1/location", locationURL),
 					tripToSave.Id,
 				)
 				if err != nil {
 					lg.Error(fmt.Sprintf("failed to send trip invitations: %s\n", err))
 				}
-
 			} else {
 				var status trip_status.TripStatus
 				switch event.Type {

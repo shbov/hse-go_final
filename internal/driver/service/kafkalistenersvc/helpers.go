@@ -1,16 +1,15 @@
 package kafkalistenersvc
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/segmentio/kafka-go"
 	"github.com/shbov/hse-go_final/internal/driver/model/events"
 	"github.com/shbov/hse-go_final/internal/driver/model/requests"
 	"github.com/shbov/hse-go_final/internal/driver/model/responses"
 	"github.com/shbov/hse-go_final/internal/driver/model/trip"
 	"github.com/shbov/hse-go_final/internal/driver/service/driversvc"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -37,30 +36,26 @@ func SendTripInvitationsToDrivers(ctx context.Context, lat float64, lng float64,
 		Radius: radius,
 	}
 
-	bodyJSONed, err := json.Marshal(body)
-	bodyEncoded := bytes.NewReader(bodyJSONed)
+	req, err := http.NewRequest(http.MethodGet, locationURL, nil)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, locationURL, bodyEncoded)
+	q := req.URL.Query()
+	q.Add("lat", fmt.Sprintf("%f", body.Lat))
+	q.Add("lng", fmt.Sprintf("%f", body.Lng))
+	q.Add("radius", fmt.Sprintf("%f", body.Radius))
+	req.URL.RawQuery = q.Encode()
+
+	r, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
+	defer r.Body.Close()
 
-	var drivers []responses.DriverInfo
-	reqBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(reqBody, &drivers); err != nil {
+	var drivers responses.DriverInfoArray
+	if err := json.NewDecoder(r.Body).Decode(&drivers); err != nil {
 		return err
 	}
 

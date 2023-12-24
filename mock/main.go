@@ -52,12 +52,12 @@ func main() {
 			},
 			Status: "CREATED_FROM_KAFKA",
 			From: trip.Coordinates{
-				Lat: 43.23,
-				Lng: 54.22,
+				Lat: 70.5,
+				Lng: 55.5,
 			},
 			To: trip.Coordinates{
-				Lat: 65.12,
-				Lng: 73.73,
+				Lat: 80,
+				Lng: 65,
 			},
 		},
 	}
