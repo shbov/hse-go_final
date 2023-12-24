@@ -39,6 +39,8 @@ services:
         condition: service_completed_successfully
       mongodb:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     volumes:
       - './.env:/driver/.env'
       - './migrations/driver/:/driver/migrations/driver/'
@@ -153,6 +155,11 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "driver:1:1"
-
+    healthcheck:
+      test: nc -z localhost 29092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
 volumes:
   prom_data:
