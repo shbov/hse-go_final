@@ -29,7 +29,14 @@ func ParseEventCreate(m kafka.Message) (*trip.Trip, error) {
 	return &tripToSave, nil
 }
 
-func SendTripInvitationsToDrivers(ctx context.Context, lat float64, lng float64, radius float64, locationURL string, tripId string) error {
+func SendTripInvitationsToDrivers(
+	ctx context.Context,
+	lat float64,
+	lng float64,
+	radius float64,
+	locationURL string,
+	tripId string) error {
+
 	body := requests.GetDriversBody{
 		Lat:    lat,
 		Lng:    lng,
@@ -37,6 +44,7 @@ func SendTripInvitationsToDrivers(ctx context.Context, lat float64, lng float64,
 	}
 
 	req, err := http.NewRequest(http.MethodGet, locationURL, nil)
+
 	if err != nil {
 		return err
 	}

@@ -29,6 +29,8 @@ type AppConfig struct {
 type DatabaseConfig struct {
 	DSN           string `yaml:"dsn"`
 	MigrationsDir string `yaml:"migrations_dir"`
+	Migrate       bool   `yaml:"migrate"`
+	Populate      bool   `yaml:"populate"`
 }
 
 type Config struct {
@@ -41,13 +43,15 @@ func ParseConfigFromEnv() (*Config, error) {
 	return &Config{
 		App: AppConfig{
 			AppName:         DefaultAppName,
-			Debug:           config.GetDebug(os.Getenv("APP_DEBUG")),
+			Debug:           config.GetEnvBoolean(os.Getenv("APP_DEBUG")),
 			DSN:             config.GetEnv(os.Getenv("APP_DSN"), DefaultDSN),
 			ShutdownTimeout: config.ParseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), DefaultShutdownTimeout),
 		},
 		Database: DatabaseConfig{
 			DSN:           config.GetEnv(os.Getenv("LOCATION_DB_DSN"), DefaultDSN),
 			MigrationsDir: config.GetEnv(os.Getenv("LOCATION_DB_MIGRATIONS_DIR"), DefaultMigrationsDir),
+			Migrate:       config.GetEnvBoolean(os.Getenv("LOCATION_DB_MIGRATE")),
+			Populate:      config.GetEnvBoolean(os.Getenv("LOCATION_DB_POPULATE")),
 		},
 		HTTP: httpadapter.Config{
 			ServeAddress:   config.GetEnv(os.Getenv("LOCATION_HTTP_SERVE_ADDRESS"), DefaultServeAddress),

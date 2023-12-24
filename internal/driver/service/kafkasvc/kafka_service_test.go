@@ -103,7 +103,6 @@ func TestStartTrip(t *testing.T) {
 func TestEndTrip(t *testing.T) {
 	// Setup
 	mockKafka := new(kafkamock.KafkaMock)
-
 	tripId := "trip-1"
 
 	service := New(context.Background(), mockKafka)

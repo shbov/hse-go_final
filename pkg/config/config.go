@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func GetDebug(getenv string) bool {
+func GetEnvBoolean(getenv string) bool {
 	if getenv == "" {
 		return false
 	}

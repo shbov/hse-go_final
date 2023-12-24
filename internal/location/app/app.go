@@ -91,9 +91,13 @@ func initDB(ctx context.Context, config *DatabaseConfig) (*pgxpool.Pool, error) 
 	}
 
 	// migrations
-	m, err := migrate.New(config.MigrationsDir, config.DSN)
-	if err != nil {
-		return nil, err
+	var m *migrate.Migrate
+
+	if config.Migrate {
+		m, err = migrate.New(config.MigrationsDir, config.DSN)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// if we need to down all the tables & data

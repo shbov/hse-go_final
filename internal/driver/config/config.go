@@ -15,6 +15,9 @@ const (
 	DefaultDSN             = "dsn://"
 	DefaultMigrationsDir   = "file://migrations/driver"
 
+	DefaultMigratePolicy  = true
+	DefaultPopulatePolicy = true
+
 	DefaultOtlpAddress    = "localhost:4317"
 	DefaultSwaggerAddress = "localhost:8081"
 
@@ -41,6 +44,8 @@ type MongoConfig struct {
 	Database      string `yaml:"database"`
 	Uri           string `yaml:"uri"`
 	MigrationsDir string `yaml:"migrations_dir"`
+	Migrate       bool   `yaml:"migrate"`
+	Populate      bool   `yaml:"populate"`
 }
 
 type KafkaConfig struct {
@@ -68,7 +73,7 @@ func ParseConfigFromEnv() (*Config, error) {
 	return &Config{
 		App: AppConfig{
 			AppName:         DefaultAppName,
-			Debug:           config.GetDebug(os.Getenv("APP_DEBUG")),
+			Debug:           config.GetEnvBoolean(os.Getenv("APP_DEBUG")),
 			DSN:             config.GetEnv(os.Getenv("APP_DSN"), DefaultDSN),
 			ShutdownTimeout: config.ParseDuration(os.Getenv("APP_SHUTDOWN_TIMEOUT"), DefaultShutdownTimeout),
 		},
@@ -84,6 +89,8 @@ func ParseConfigFromEnv() (*Config, error) {
 			Database:      config.GetEnv(os.Getenv("DRIVER_DB"), DefaultDatabase),
 			Uri:           config.GetEnv(os.Getenv("DRIVER_MONGO_URI"), DefaultMongoUri),
 			MigrationsDir: config.GetEnv(os.Getenv("DRIVER_MONGO_MIGRATIONS_DIR"), DefaultMigrationsDir),
+			Migrate:       config.GetEnvBoolean(os.Getenv("DRIVER_DB_MIGRATE")),
+			Populate:      config.GetEnvBoolean(os.Getenv("DRIVER_DB_POPULATE")),
 		},
 
 		Kafka: KafkaConfig{

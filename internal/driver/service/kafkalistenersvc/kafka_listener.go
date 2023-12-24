@@ -56,6 +56,8 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 					lg.Error(fmt.Sprintf("failed to save trip: %s\n", err))
 				}
 
+				lg.Debug(fmt.Sprintf("Location URL: %s", locationURL))
+
 				err = SendTripInvitationsToDrivers(
 					ctx,
 					tripToSave.From.Lat,
