@@ -24,6 +24,8 @@ const (
 	DefaultKafkaGroupID  = "driver"
 	DefaultKafkaTopic    = "driver"
 	DefaultKafkaMaxBytes = "2000000"
+
+	DefaultLocationService = "http://localhost:8080"
 )
 
 var DefaultKafkaBrokers = []string{"kafka:29092"}
@@ -92,7 +94,7 @@ func ParseConfigFromEnv() (*Config, error) {
 		},
 
 		Location: LocationService{
-			URL: config.GetEnv(os.Getenv("LOCATION_URL"), "http://localhost:8080"),
+			URL: config.GetEnv(os.Getenv("LOCATION_URL"), DefaultLocationService),
 		},
 	}, nil
 }
