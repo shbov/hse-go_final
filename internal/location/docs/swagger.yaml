@@ -21,7 +21,7 @@ info:
   title: Location service
   version: "1.0"
 paths:
-  /:
+  /drivers:
     get:
       consumes:
       - application/json
@@ -45,10 +45,12 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
       summary: GetDriversByLocation
-  /{driver_id}/location:
+  /drivers/{driver_id}/location:
     post:
       consumes:
       - application/json

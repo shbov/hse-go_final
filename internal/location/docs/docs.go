@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
+        "/drivers": {
             "get": {
                 "description": "Поиск водителей по заданным координатам и радиусу",
                 "consumes": [
@@ -58,13 +58,16 @@ const docTemplate = `{
                     "200": {
                         "description": "OK"
                     },
+                    "400": {
+                        "description": "Bad Request"
+                    },
                     "404": {
                         "description": "Not Found"
                     }
                 }
             }
         },
-        "/{driver_id}/location": {
+        "/drivers/{driver_id}/location": {
             "post": {
                 "description": "Обновление данных о позиции водителя",
                 "consumes": [
@@ -126,6 +129,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a location service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

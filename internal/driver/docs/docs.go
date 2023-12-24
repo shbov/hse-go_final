@@ -260,6 +260,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a driver service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

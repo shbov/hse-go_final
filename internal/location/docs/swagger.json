@@ -18,7 +18,7 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
-        "/": {
+        "/drivers": {
             "get": {
                 "description": "Поиск водителей по заданным координатам и радиусу",
                 "consumes": [
@@ -52,13 +52,16 @@
                     "200": {
                         "description": "OK"
                     },
+                    "400": {
+                        "description": "Bad Request"
+                    },
                     "404": {
                         "description": "Not Found"
                     }
                 }
             }
         },
-        "/{driver_id}/location": {
+        "/drivers/{driver_id}/location": {
             "post": {
                 "description": "Обновление данных о позиции водителя",
                 "consumes": [
