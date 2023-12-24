@@ -39,18 +39,33 @@ func TestAddTrip(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
+func TestUpdateDriverIdByTripId(t *testing.T) {
+	mockRepo := new(repomock.TripMock)
+	tripID := "trip1"
+	updatedDriverId := "driver2"
+
+	mockRepo.On("UpdateDriverIdByTripId", context.Background(), tripID, updatedDriverId).Return(nil)
+	tripService := New(context.Background(), mockRepo)
+
+	err := tripService.UpdateDriverIdByTripId(context.Background(), tripID, updatedDriverId)
+
+	assert.NoError(t, err, "Expected no error")
+
+	mockRepo.AssertExpectations(t)
+}
+
 func TestGetTripsByUserId(t *testing.T) {
 	// Setup
 	mockRepo := new(repomock.TripMock)
 
 	tripService := New(context.Background(), mockRepo)
-	userID := "user123"
+	userID := "driver1"
 
 	// Mock the repository method
 	trips := []trip.Trip{
 		{
 			Id:       "trip1",
-			DriverId: "driver1",
+			DriverId: userID,
 			From: trip.Coordinates{
 				Lat: 1.0,
 				Lng: 1.0,
@@ -67,7 +82,7 @@ func TestGetTripsByUserId(t *testing.T) {
 		},
 		{
 			Id:       "trip2",
-			DriverId: "driver2",
+			DriverId: userID,
 			From: trip.Coordinates{
 				Lat: 3.0,
 				Lng: 3.0,
@@ -105,9 +120,9 @@ func TestGetTripByUserIdTripId(t *testing.T) {
 	tripID := "trip1"
 
 	// Mock the repository method
-	trip := &trip.Trip{
-		Id:       "trip1",
-		DriverId: "driver1",
+	trip := trip.Trip{
+		Id:       tripID,
+		DriverId: userID,
 		From: trip.Coordinates{
 			Lat: 1.0,
 			Lng: 1.0,
@@ -123,7 +138,7 @@ func TestGetTripByUserIdTripId(t *testing.T) {
 		Status: trip_status.DRIVERFOUND,
 	}
 
-	mockRepo.On("GetTripByUserIdTripId", context.Background(), userID, tripID).Return(trip, nil)
+	mockRepo.On("GetTripByUserIdTripId", context.Background(), userID, tripID).Return(&trip, nil)
 
 	// Test
 	result, err := tripService.GetTripByUserIdTripId(context.Background(), userID, tripID)
@@ -131,6 +146,6 @@ func TestGetTripByUserIdTripId(t *testing.T) {
 	// Assertions
 	assert.NoError(t, err, "Expected no error")
 	assert.NotNil(t, result, "Expected result not to be nil")
-	assert.Equal(t, trip, result, "Expected the same trip in result")
+	assert.Equal(t, trip, *result, "Expected the same trip in result")
 	mockRepo.AssertExpectations(t)
 }

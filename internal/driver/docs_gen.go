@@ -1,3 +1,3 @@
 package internal
 
-//go:generate swag init -g httpadapter/adapter.go -o docs
+//go:generate swag init -g httpadapter/handlers.go -o docs
