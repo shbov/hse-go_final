@@ -3,9 +3,9 @@ package event_type
 type EventType string
 
 const (
-	CREATED  EventType = "event.trip.created"
-	ACCEPTED EventType = "event.trip.accepted"
-	CANCELED EventType = "event.trip.cancelled"
-	ENDED    EventType = "event.trip.ended"
-	STARTED  EventType = "event.trip.started"
+	CREATED  EventType = "trip.event.created"
+	ACCEPTED EventType = "trip.event.accepted"
+	CANCELED EventType = "trip.event.cancelled"
+	ENDED    EventType = "trip.event.ended"
+	STARTED  EventType = "trip.event.started"
 )

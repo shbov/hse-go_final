@@ -40,7 +40,7 @@ func main() {
 	eventCreate1 := events.CreatedTripEvent{
 		Id:              "e322a084-ca0f-4f4a-91cf-cae27946954b",
 		Source:          "/trip",
-		Type:            "event.trip.created",
+		Type:            "trip.event.created",
 		DataContentType: "application/json",
 		Time:            time.Now(),
 		Data: events.CreatedTripData{
@@ -69,7 +69,7 @@ func main() {
 	tripToAddFromKafka2 := events.CreatedTripEvent{
 		Id:              "0a580514-c9df-4ffe-a24a-85c21c84d7d6",
 		Source:          "/trip",
-		Type:            "event.trip.created",
+		Type:            "trip.event.created",
 		DataContentType: "application/json",
 		Time:            time.Now(),
 		Data: events.CreatedTripData{
