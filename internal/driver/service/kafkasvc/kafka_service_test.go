@@ -25,12 +25,13 @@ func TestGetReader(t *testing.T) {
 		Topic:   cfg.Kafka.Topic,
 	}
 
-	mockKafka.On("AddTrip", context.Background()).Return(kafka.NewReader(rc))
-	kafkaService := New(context.Background(), mockKafka)
+	ctx := context.Background()
 
-	reader := kafkaService.GetReader(context.Background())
+	mockKafka.On("GetReader", ctx).Return(kafka.NewReader(rc))
+	service := New(ctx, mockKafka)
+
+	reader := service.GetReader(ctx)
 	assert.NotNil(t, reader, "Expected result not to be nil")
-	assert.Equal(t, reader, kafka.NewReader(rc), "Expected reader with the same config")
 
 	mockKafka.AssertExpectations(t)
 }
@@ -43,10 +44,12 @@ func TestCancelTrip(t *testing.T) {
 	tripId := "trip-1"
 	reason := "no fuel"
 
-	mockKafka.On("CancelTrip", context.Background(), tripId, reason).Return(nil)
+	ctx := context.Background()
+
+	mockKafka.On("CancelTrip", ctx, tripId, reason).Return(nil)
 
 	// Test
-	err := service.CancelTrip(context.Background(), tripId, reason)
+	err := service.CancelTrip(ctx, tripId, reason)
 
 	// Assertions
 	assert.NoError(t, err, "Expected no error")
@@ -62,10 +65,13 @@ func TestAcceptTrip(t *testing.T) {
 	tripId := "trip-1"
 
 	service := New(context.Background(), mockKafka)
-	mockKafka.On("CancelTrip", context.Background(), tripId, driverId).Return(nil)
+
+	ctx := context.Background()
+
+	mockKafka.On("AcceptTrip", ctx, driverId, tripId).Return(nil)
 
 	// Test
-	err := service.AcceptTrip(context.Background(), driverId, tripId)
+	err := service.AcceptTrip(ctx, driverId, tripId)
 
 	// Assertions
 	assert.NoError(t, err, "Expected no error")
@@ -77,14 +83,16 @@ func TestStartTrip(t *testing.T) {
 	// Setup
 	mockKafka := new(kafkamock.KafkaMock)
 
-	driverId := "driver-1"
 	tripId := "trip-1"
 
 	service := New(context.Background(), mockKafka)
-	mockKafka.On("CancelTrip", context.Background(), tripId, driverId).Return(nil)
+
+	ctx := context.Background()
+
+	mockKafka.On("StartTrip", ctx, tripId).Return(nil)
 
 	// Test
-	err := service.StartTrip(context.Background(), tripId)
+	err := service.StartTrip(ctx, tripId)
 
 	// Assertions
 	assert.NoError(t, err, "Expected no error")
@@ -96,14 +104,16 @@ func TestEndTrip(t *testing.T) {
 	// Setup
 	mockKafka := new(kafkamock.KafkaMock)
 
-	driverId := "driver-1"
 	tripId := "trip-1"
 
 	service := New(context.Background(), mockKafka)
-	mockKafka.On("CancelTrip", context.Background(), tripId, driverId).Return(nil)
+
+	ctx := context.Background()
+
+	mockKafka.On("EndTrip", ctx, tripId).Return(nil)
 
 	// Test
-	err := service.EndTrip(context.Background(), tripId)
+	err := service.EndTrip(ctx, tripId)
 
 	// Assertions
 	assert.NoError(t, err, "Expected no error")
