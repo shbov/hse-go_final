@@ -55,5 +55,5 @@ Grafana, Prometheus и Jaeger соответственно. Также в Grafan
 
 ### Тестирование
 
-Мы добавили разные моки, например, есть [mock/main.go](https://github.com/shbov/hse-go_final/blob/main/mock/main.go) для
+Мы добавили разные моки, например, есть [cmd/mock/main.go](https://github.com/shbov/hse-go_final/blob/main/cmd/mock/main.go) для
 эмитации работы кафки :)
