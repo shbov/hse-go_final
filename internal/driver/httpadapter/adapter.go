@@ -127,9 +127,6 @@ func (a *adapter) AcceptTrip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: we need to link driver to a trip
-	// TODO: аналогично в других ручках; нам нужно поддерживать текущий статус трипа в монге актуальным,
-	//  т.е когда приходит запрос из кафки/http, то нужно еще и обновлять БД
 	err := a.tripService.UpdateDriverIdByTripId(r.Context(), tripID, userID)
 	if err != nil {
 		writeError(w, err)
