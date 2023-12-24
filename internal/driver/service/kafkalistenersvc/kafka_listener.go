@@ -63,7 +63,7 @@ func (kl *kafkaListener) Run(ctx context.Context, locationURL string) {
 					tripToSave.From.Lat,
 					tripToSave.From.Lng,
 					defaultSearchRadius,
-					fmt.Sprintf("%s/api/v1/location", locationURL),
+					fmt.Sprintf("%s/drivers", locationURL),
 					tripToSave.Id,
 				)
 				if err != nil {

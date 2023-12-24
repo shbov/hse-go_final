@@ -56,7 +56,7 @@ type adapter struct {
 // @Param        request	body     requests.SetDriverLocationBody  true  "Latitude and longitude  in decimal degrees"
 // @Success 200
 // @Failure 400
-// @Router /{driver_id}/location [post]
+// @Router /drivers/{driver_id}/location [post]
 func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "SetDriverLocation")
 	defer span.End()
@@ -97,7 +97,7 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 // @Success 200
 // @Failure 400
 // @Failure 404
-// @Router / [get]
+// @Router /drivers [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetDriversByLocation")
 	defer span.End()
@@ -165,8 +165,8 @@ func (a *adapter) Serve(ctx context.Context) error {
 		WithUserAgent: true,
 	}))
 
-	apiRouter.Get("/", a.GetDriversByLocation)
-	apiRouter.Post("/{driver_id}/location", a.SetDriverLocation)
+	apiRouter.Get("/drivers", a.GetDriversByLocation)
+	apiRouter.Post("/drivers/{driver_id}/location", a.SetDriverLocation)
 
 	// установка маршрута для документации
 	// Адрес, по которому будет доступен doc.json
