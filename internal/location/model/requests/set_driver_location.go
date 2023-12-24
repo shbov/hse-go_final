@@ -9,5 +9,6 @@ func (body *SetDriverLocationBody) Validate() bool {
 	if (body.Lat <= 90.0) && (body.Lat >= -90.0) && (body.Lng <= 180.0) && (body.Lng >= -180.0) {
 		return true
 	}
+
 	return false
 }

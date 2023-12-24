@@ -53,7 +53,7 @@ type adapter struct {
 // @Description Обновление данных о позиции водителя
 // @Accept       json
 // @Param        driver_id    path     string  true  "ID of driver"  Format(uuid)
-// @Param        lat    body     requests.SetDriverLocationBody  true  "Latitude and longitude  in decimal degrees"
+// @Param        request	body     requests.SetDriverLocationBody  true  "Latitude and longitude  in decimal degrees"
 // @Success 200
 // @Failure 400
 // @Router /{driver_id}/location [post]
@@ -95,26 +95,27 @@ func (a *adapter) SetDriverLocation(w http.ResponseWriter, r *http.Request) {
 // @Param        lng    query     float64  true  "Longitude in decimal degrees"
 // @Param        radius    query     float64  true  "Radius in meters"
 // @Success 200
+// @Failure 400
 // @Failure 404
 // @Router / [get]
 func (a *adapter) GetDriversByLocation(w http.ResponseWriter, r *http.Request) {
 	_, span := tracer.Start(r.Context(), "GetDriversByLocation")
 	defer span.End()
 
-	lat, err := http_helpers.ParseQueryToFloat(r.URL.Query().Get("lat"))
+	lat, err := http_helpers.ParseQueryToFloat("lat", r.URL.Query())
 	if err != nil {
 		writeError(w, service.ErrRequestIsIncorrect)
 		return
 	}
 
-	lng, err := http_helpers.ParseQueryToFloat(r.URL.Query().Get("lng"))
+	lng, err := http_helpers.ParseQueryToFloat("lng", r.URL.Query())
 	if err != nil {
 		writeError(w, service.ErrRequestIsIncorrect)
 		return
 	}
 
-	radius, err := http_helpers.ParseQueryToFloat(r.URL.Query().Get("radius"))
-	if err != nil {
+	radius, err := http_helpers.ParseQueryToFloat("radius", r.URL.Query())
+	if err != nil || radius <= 0 {
 		writeError(w, service.ErrRequestIsIncorrect)
 		return
 	}

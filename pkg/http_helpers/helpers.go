@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"net/url"
 	"strconv"
 
 	"net/http"
@@ -36,8 +37,14 @@ func IsValidUUID(u string) bool {
 	return err == nil
 }
 
-func ParseQueryToFloat(query string) (float64, error) {
-	floatValue, err := strconv.ParseFloat(query, 64)
+func ParseQueryToFloat(field string, values url.Values) (float64, error) {
+	value := values.Get(field)
+
+	if value == "" {
+		return 0, fmt.Errorf("Field %s is required!\n", field)
+	}
+
+	floatValue, err := strconv.ParseFloat(value, 64)
 	if err != nil {
 		return 0, err
 	}

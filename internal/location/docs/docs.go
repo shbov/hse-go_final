@@ -82,7 +82,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Latitude and longitude  in decimal degrees",
-                        "name": "lat",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {

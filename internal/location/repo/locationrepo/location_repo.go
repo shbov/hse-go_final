@@ -35,15 +35,16 @@ func (r *locationRepo) AddLocation(ctx context.Context, driverId string, lat flo
 }
 
 func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float64, centerLng float64, radius float64) ([]model.Location, error) {
-	var result []model.Location
+	result := []model.Location{}
 
 	rows, err := r.conn(ctx).Query(
 		ctx,
-		`SELECT id, driver_id, lat, lng, created_at FROM locations WHERE (lat - $1) * (lat - $1) + (lng - $2) * (lng - $2) <= $3`,
+		`SELECT id, driver_id, lat, lng FROM locations WHERE (lat - $1) * (lat - $1) + (lng - $2) * (lng - $2) <= $3`,
 		centerLat, centerLng, radius*radius)
 	defer rows.Close()
+
 	if err != nil {
-		return result, err
+		return []model.Location{}, err
 	}
 
 	for rows.Next() {
@@ -51,9 +52,10 @@ func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float
 
 		if err := rows.Scan(&location.Id, &location.DriverId, &location.Lat, &location.Lng); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return nil, errors.New("Didn't find drivers in that location\n")
+				return []model.Location{}, errors.New("Didn't find drivers in that location\n")
 			}
-			return nil, err
+
+			return []model.Location{}, err
 		}
 
 		result = append(result, location)
@@ -63,12 +65,12 @@ func (r *locationRepo) GetDriversInLocation(ctx context.Context, centerLat float
 }
 
 func (r *locationRepo) SetLocationByDriverId(ctx context.Context, driverId string, lat float64, lng float64) error {
-	newModel, err := r.conn(ctx).Exec(ctx, `UPDATE locations SET lat = $1, lng = $2 WHERE driver_id = $3`, lat, lng, driverId)
+	res, err := r.conn(ctx).Exec(ctx, `UPDATE locations SET lat = $1, lng = $2 WHERE driver_id = $3`, lat, lng, driverId)
 	if err != nil {
 		return err
 	}
 
-	if newModel.RowsAffected() == 0 {
+	if res.RowsAffected() == 0 {
 		return r.AddLocation(ctx, driverId, lat, lng)
 	}
 

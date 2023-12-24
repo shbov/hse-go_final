@@ -62,7 +62,7 @@ paths:
         type: string
       - description: Latitude and longitude  in decimal degrees
         in: body
-        name: lat
+        name: request
         required: true
         schema:
           $ref: '#/definitions/requests.SetDriverLocationBody'
